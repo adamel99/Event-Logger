@@ -1,0 +1,17 @@
+# Virtual environment
+venv/
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+
+# VS Code settings
+.vscode/
+
+# Mac junk files
+.DS_Store
+
+# Any real log exports you don't want public
+*.log
+*.csv
