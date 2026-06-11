@@ -12,6 +12,6 @@ __pycache__/
 # Mac junk files
 .DS_Store
 
-# Any real log exports you don't want public
-*.log
-*.csv
+# Real log exports (keep these local)
+sample_logs/windows_security_real.csv
+sample_logs/auth_real.log
