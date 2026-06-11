@@ -32,8 +32,7 @@ except ImportError:
 
 # ── MITRE ATT&CK Mapping ──────────────────────────────────────────────────────
 
-MITRE =
-{
+MITRE = {
     "brute_force":         ("T1110",     "Brute Force"),
     "failed_login":        ("T1078",     "Valid Accounts – Failed Attempt"),
     "sudo_escalation":     ("T1548.003", "Abuse Elevation Control – sudo"),
