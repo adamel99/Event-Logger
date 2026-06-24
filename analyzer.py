@@ -672,396 +672,251 @@ def export_html(alerts, line_count, filepath, outfile):
     lateral_count = sum(1 for a in alerts if a.get("lateral"))
     generated_at  = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    # Build alert rows
+    sev_dot = {
+        "CRITICAL": "#9333ea",
+        "HIGH":     "#ef4444",
+        "MEDIUM":   "#f59e0b",
+        "LOW":      "#6b7280",
+    }
+
     rows_html = ""
     for a in alerts:
-        sev = a["severity"]
-        sev_class = {
-            "CRITICAL": "sev-critical",
-            "HIGH":     "sev-high",
-            "MEDIUM":   "sev-medium",
-            "LOW":      "sev-low",
-        }.get(sev, "sev-low")
-        lateral_badge = '<span class="badge-lateral">LATERAL</span>' if a.get("lateral") else ""
-        desc_cell = f'<div class="alert-desc">{a["description"]}</div>' if a.get("description") else ""
+        sev   = a["severity"]
+        dot   = sev_dot.get(sev, "#6b7280")
+        name  = a["name"].lstrip("⚠ ").strip()
+        desc  = f'<div class="desc">{a["description"]}</div>' if a.get("description") else ""
+        lat   = '<span class="lat-pill">lateral</span>' if a.get("lateral") else ""
         rows_html += f"""
-        <tr class="alert-row {'lateral-row' if a.get('lateral') else ''}">
-          <td><span class="sev-badge {sev_class}">{sev}</span>{lateral_badge}</td>
-          <td class="ts-cell">{a['timestamp']}</td>
-          <td>
-            <span class="alert-name">{a['name']}</span>
-            {desc_cell}
-          </td>
-          <td>{a['user']}</td>
-          <td class="ip-cell">{a['ip']}</td>
-          <td class="mitre-cell"><code>{a['mitre_id']}</code><br><span class="mitre-name">{a['mitre_name']}</span></td>
-          <td class="raw-cell"><span class="raw-text">{a['raw'][:120]}</span></td>
-        </tr>"""
+      <tr data-sev="{sev}" data-lat="{'1' if a.get('lateral') else '0'}">
+        <td><span class="dot" style="background:{dot}"></span></td>
+        <td class="sev-cell">{sev.capitalize()}</td>
+        <td class="ts">{a['timestamp']}</td>
+        <td><span class="name">{name}</span>{lat}{desc}</td>
+        <td class="mono">{a['user']}</td>
+        <td class="mono ip">{a['ip']}</td>
+        <td><span class="mitre-id">{a['mitre_id']}</span><span class="mitre-name">{a['mitre_name']}</span></td>
+      </tr>"""
+
+    lateral_banner = ""
+    if lateral_count:
+        lateral_banner = f"""
+    <div class="banner">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0;margin-top:1px"><path d="M8 2L14 13H2L8 2Z" stroke="#b45309" stroke-width="1.5" fill="none"/><path d="M8 6v3M8 10.5v.5" stroke="#b45309" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <span><strong>{lateral_count} lateral movement indicator{"s" if lateral_count != 1 else ""} detected</strong> — review these alerts first.</span>
+    </div>"""
 
     html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SOC Triage Report — {filepath}</title>
+<title>SOC Report — {filepath}</title>
 <style>
-  :root {{
-    --bg:        #0d0f14;
-    --surface:   #141720;
-    --surface2:  #1c2030;
-    --border:    #252a3a;
-    --text:      #c9d1e0;
-    --muted:     #5a6070;
-    --accent:    #4e7fff;
-    --critical:  #d43fff;
-    --high:      #ff4e4e;
-    --medium:    #f5a623;
-    --low:       #4ec9ff;
-    --lateral:   #ff2d78;
-    --font-mono: "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
-    --font-ui:   "Inter", "Segoe UI", system-ui, sans-serif;
-  }}
+*, *::before, *::after {{ box-sizing: border-box; margin: 0; padding: 0; }}
 
-  * {{ box-sizing: border-box; margin: 0; padding: 0; }}
+body {{
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #111827;
+  background: #f9fafb;
+  min-height: 100vh;
+}}
 
-  body {{
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--font-ui);
-    font-size: 13px;
-    line-height: 1.5;
-    min-height: 100vh;
-  }}
+.page {{ max-width: 1200px; margin: 0 auto; padding: 40px 32px; }}
 
-  /* ── Header ── */
-  .header {{
-    background: linear-gradient(135deg, #0d0f14 0%, #141a2e 100%);
-    border-bottom: 1px solid var(--border);
-    padding: 28px 36px 24px;
-  }}
-  .header-top {{
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
-    margin-bottom: 20px;
-  }}
-  .header-icon {{
-    font-size: 32px;
-    line-height: 1;
-    flex-shrink: 0;
-    margin-top: 4px;
-  }}
-  .header-title h1 {{
-    font-family: var(--font-mono);
-    font-size: 22px;
-    font-weight: 600;
-    color: #fff;
-    letter-spacing: -0.3px;
-  }}
-  .header-title .subtitle {{
-    color: var(--muted);
-    font-size: 12px;
-    margin-top: 3px;
-  }}
-  .header-meta {{
-    display: flex;
-    gap: 24px;
-    flex-wrap: wrap;
-  }}
-  .meta-item {{
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }}
-  .meta-label {{ color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; }}
-  .meta-value {{ color: var(--text); font-family: var(--font-mono); font-size: 12px; }}
+.top {{
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  gap: 16px;
+}}
+h1 {{ font-size: 18px; font-weight: 600; color: #111827; letter-spacing: -0.2px; }}
+.meta {{ font-size: 12px; color: #6b7280; margin-top: 4px; }}
+.generated {{ font-size: 12px; color: #9ca3af; text-align: right; }}
 
-  /* ── Stat Cards ── */
-  .stats {{
-    display: flex;
-    gap: 12px;
-    padding: 20px 36px;
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    flex-wrap: wrap;
-  }}
-  .stat-card {{
-    flex: 1;
-    min-width: 110px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 14px 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    position: relative;
-    overflow: hidden;
-  }}
-  .stat-card::before {{
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-  }}
-  .stat-card.critical::before {{ background: var(--critical); }}
-  .stat-card.high::before     {{ background: var(--high); }}
-  .stat-card.medium::before   {{ background: var(--medium); }}
-  .stat-card.low::before      {{ background: var(--low); }}
-  .stat-card.lateral-card::before {{ background: var(--lateral); }}
-  .stat-card.total::before    {{ background: var(--accent); }}
+.cards {{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}}
+.card {{
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+}}
+.card-num {{ font-size: 26px; font-weight: 600; line-height: 1; margin-bottom: 4px; }}
+.card-label {{ font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; }}
+.card.total   .card-num {{ color: #111827; }}
+.card.crit    .card-num {{ color: #9333ea; }}
+.card.high    .card-num {{ color: #ef4444; }}
+.card.med     .card-num {{ color: #f59e0b; }}
+.card.low     .card-num {{ color: #6b7280; }}
+.card.lateral .card-num {{ color: #b45309; }}
 
-  .stat-num {{
-    font-family: var(--font-mono);
-    font-size: 28px;
-    font-weight: 700;
-    line-height: 1;
-  }}
-  .stat-card.critical .stat-num {{ color: var(--critical); }}
-  .stat-card.high .stat-num     {{ color: var(--high); }}
-  .stat-card.medium .stat-num   {{ color: var(--medium); }}
-  .stat-card.low .stat-num      {{ color: var(--low); }}
-  .stat-card.lateral-card .stat-num {{ color: var(--lateral); }}
-  .stat-card.total .stat-num    {{ color: var(--accent); }}
+.banner {{
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 20px;
+  font-size: 13px;
+  color: #78350f;
+}}
+.banner strong {{ font-weight: 600; }}
 
-  .stat-label {{
-    color: var(--muted);
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.6px;
-  }}
+.toolbar {{
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}}
+.toolbar span {{ font-size: 12px; color: #9ca3af; margin-right: 4px; }}
+.pill {{
+  font-size: 12px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.12s;
+  font-family: inherit;
+}}
+.pill:hover {{ border-color: #d1d5db; background: #f9fafb; }}
+.pill.on {{ background: #111827; color: #fff; border-color: #111827; }}
+.pill.lat-pill-btn.on {{ background: #b45309; border-color: #b45309; }}
 
-  /* ── Lateral Banner ── */
-  .lateral-banner {{
-    background: linear-gradient(90deg, rgba(255, 45, 120, 0.12), transparent);
-    border-left: 3px solid var(--lateral);
-    margin: 20px 36px 0;
-    padding: 12px 16px;
-    border-radius: 0 6px 6px 0;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 13px;
-  }}
-  .lateral-banner .icon {{ font-size: 18px; }}
-  .lateral-banner strong {{ color: var(--lateral); }}
+.tbl-wrap {{ background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; }}
+table {{ width: 100%; border-collapse: collapse; }}
+thead th {{
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #9ca3af;
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid #f3f4f6;
+  background: #fafafa;
+  white-space: nowrap;
+}}
+tbody tr {{ border-bottom: 1px solid #f3f4f6; transition: background 0.08s; }}
+tbody tr:last-child {{ border-bottom: none; }}
+tbody tr:hover {{ background: #fafafa; }}
+td {{ padding: 11px 14px; vertical-align: top; }}
 
-  /* ── Filters ── */
-  .filters {{
-    padding: 16px 36px;
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    flex-wrap: wrap;
-  }}
-  .filters label {{ color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px; margin-right: 4px; }}
-  .filter-btn {{
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    color: var(--muted);
-    border-radius: 4px;
-    padding: 4px 12px;
-    cursor: pointer;
-    font-family: var(--font-ui);
-    font-size: 12px;
-    transition: all 0.15s;
-  }}
-  .filter-btn:hover {{ border-color: var(--accent); color: var(--text); }}
-  .filter-btn.active {{ background: var(--accent); border-color: var(--accent); color: #fff; }}
-  .filter-btn.lat-filter.active {{ background: var(--lateral); border-color: var(--lateral); }}
+.dot {{ display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-top: 4px; flex-shrink: 0; }}
+td:first-child {{ width: 24px; padding-right: 0; }}
+.sev-cell {{ font-size: 12px; font-weight: 500; color: #374151; white-space: nowrap; }}
+.ts {{ font-size: 11px; color: #9ca3af; font-variant-numeric: tabular-nums; white-space: nowrap; font-family: ui-monospace, monospace; }}
+.name {{ font-size: 13px; color: #111827; font-weight: 500; }}
+.desc {{ font-size: 11px; color: #9ca3af; margin-top: 2px; }}
+.lat-pill {{
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 500;
+  color: #92400e;
+  background: #fef3c7;
+  border: 1px solid #fde68a;
+  border-radius: 10px;
+  padding: 1px 7px;
+  margin-left: 6px;
+  vertical-align: middle;
+  letter-spacing: 0.2px;
+}}
+.mono {{ font-family: ui-monospace, "SFMono-Regular", monospace; font-size: 12px; color: #374151; }}
+.ip {{ color: #2563eb; }}
+.mitre-id {{ font-family: ui-monospace, monospace; font-size: 11px; color: #7c3aed; display: block; }}
+.mitre-name {{ font-size: 11px; color: #9ca3af; display: block; margin-top: 1px; }}
 
-  /* ── Table ── */
-  .table-wrap {{
-    padding: 0 36px 36px;
-    overflow-x: auto;
-  }}
-  table {{
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 12px;
-  }}
-  thead th {{
-    background: var(--surface);
-    color: var(--muted);
-    text-transform: uppercase;
-    font-size: 10px;
-    letter-spacing: 0.8px;
-    font-weight: 600;
-    padding: 10px 12px;
-    text-align: left;
-    border-bottom: 1px solid var(--border);
-    white-space: nowrap;
-    position: sticky;
-    top: 0;
-    z-index: 1;
-  }}
-  tr.alert-row {{
-    border-bottom: 1px solid var(--border);
-    transition: background 0.1s;
-  }}
-  tr.alert-row:hover {{ background: var(--surface2); }}
-  tr.lateral-row {{ background: rgba(255, 45, 120, 0.04); }}
-  tr.lateral-row:hover {{ background: rgba(255, 45, 120, 0.09); }}
-  td {{
-    padding: 10px 12px;
-    vertical-align: top;
-  }}
+.empty {{ text-align: center; padding: 48px; color: #9ca3af; font-size: 13px; }}
 
-  .sev-badge {{
-    display: inline-block;
-    font-family: var(--font-mono);
-    font-size: 10px;
-    font-weight: 700;
-    padding: 2px 6px;
-    border-radius: 3px;
-    letter-spacing: 0.5px;
-  }}
-  .sev-critical {{ background: rgba(212,63,255,0.18); color: var(--critical); border: 1px solid rgba(212,63,255,0.3); }}
-  .sev-high     {{ background: rgba(255,78,78,0.15);  color: var(--high);     border: 1px solid rgba(255,78,78,0.3); }}
-  .sev-medium   {{ background: rgba(245,166,35,0.15); color: var(--medium);   border: 1px solid rgba(245,166,35,0.3); }}
-  .sev-low      {{ background: rgba(78,201,255,0.12); color: var(--low);      border: 1px solid rgba(78,201,255,0.3); }}
-
-  .badge-lateral {{
-    display: inline-block;
-    margin-left: 5px;
-    font-size: 9px;
-    font-weight: 700;
-    padding: 1px 5px;
-    border-radius: 3px;
-    background: rgba(255,45,120,0.2);
-    color: var(--lateral);
-    border: 1px solid rgba(255,45,120,0.4);
-    letter-spacing: 0.5px;
-    vertical-align: middle;
-  }}
-
-  .alert-name {{ color: #e2e8f0; font-weight: 500; }}
-  .alert-desc {{ color: var(--muted); font-size: 11px; margin-top: 3px; }}
-
-  .ts-cell {{ font-family: var(--font-mono); color: var(--muted); white-space: nowrap; font-size: 11px; }}
-  .ip-cell  {{ font-family: var(--font-mono); color: var(--accent); font-size: 11px; }}
-  .mitre-cell code {{ color: var(--medium); font-family: var(--font-mono); font-size: 11px; }}
-  .mitre-name {{ color: var(--muted); font-size: 10px; }}
-  .raw-cell {{ max-width: 300px; }}
-  .raw-text {{ font-family: var(--font-mono); font-size: 10px; color: var(--muted); word-break: break-all; }}
-
-  .no-results {{
-    text-align: center;
-    padding: 60px 0;
-    color: var(--muted);
-  }}
-
-  /* ── Footer ── */
-  .footer {{
-    border-top: 1px solid var(--border);
-    padding: 16px 36px;
-    color: var(--muted);
-    font-size: 11px;
-    display: flex;
-    justify-content: space-between;
-  }}
+footer {{
+  margin-top: 24px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #9ca3af;
+  flex-wrap: wrap;
+  gap: 8px;
+}}
 </style>
 </head>
 <body>
+<div class="page">
 
-<div class="header">
-  <div class="header-top">
-    <div class="header-icon">🔍</div>
-    <div class="header-title">
-      <h1>SOC Log Analyzer — Triage Report</h1>
-      <div class="subtitle">Automated threat detection · MITRE ATT&amp;CK mapped</div>
+  <div class="top">
+    <div>
+      <h1>SOC triage report</h1>
+      <div class="meta">{filepath} &nbsp;·&nbsp; {line_count:,} lines parsed</div>
     </div>
+    <div class="generated">Generated {generated_at}</div>
   </div>
-  <div class="header-meta">
-    <div class="meta-item"><span class="meta-label">File</span><span class="meta-value">{filepath}</span></div>
-    <div class="meta-item"><span class="meta-label">Lines Parsed</span><span class="meta-value">{line_count:,}</span></div>
-    <div class="meta-item"><span class="meta-label">Generated</span><span class="meta-value">{generated_at}</span></div>
-  </div>
-</div>
 
-<div class="stats">
-  <div class="stat-card total">
-    <span class="stat-num">{len(alerts)}</span>
-    <span class="stat-label">Total Alerts</span>
+  <div class="cards">
+    <div class="card total"><div class="card-num">{len(alerts)}</div><div class="card-label">Total alerts</div></div>
+    <div class="card crit"><div class="card-num">{counts['CRITICAL']}</div><div class="card-label">Critical</div></div>
+    <div class="card high"><div class="card-num">{counts['HIGH']}</div><div class="card-label">High</div></div>
+    <div class="card med"><div class="card-num">{counts['MEDIUM']}</div><div class="card-label">Medium</div></div>
+    <div class="card low"><div class="card-num">{counts['LOW']}</div><div class="card-label">Low</div></div>
+    <div class="card lateral"><div class="card-num">{lateral_count}</div><div class="card-label">Lateral movement</div></div>
   </div>
-  <div class="stat-card critical">
-    <span class="stat-num">{counts['CRITICAL']}</span>
-    <span class="stat-label">Critical</span>
-  </div>
-  <div class="stat-card high">
-    <span class="stat-num">{counts['HIGH']}</span>
-    <span class="stat-label">High</span>
-  </div>
-  <div class="stat-card medium">
-    <span class="stat-num">{counts['MEDIUM']}</span>
-    <span class="stat-label">Medium</span>
-  </div>
-  <div class="stat-card low">
-    <span class="stat-num">{counts['LOW']}</span>
-    <span class="stat-label">Low</span>
-  </div>
-  <div class="stat-card lateral-card">
-    <span class="stat-num">{lateral_count}</span>
-    <span class="stat-label">Lateral Movement</span>
-  </div>
-</div>
 
-{"" if not lateral_count else f'''
-<div class="lateral-banner">
-  <span class="icon">⚠️</span>
-  <span><strong>Lateral Movement Indicators Detected</strong> — {lateral_count} alert(s) suggest attacker pivoting between hosts. Review LATERAL-tagged rows immediately.</span>
-</div>
-'''}
+  {lateral_banner}
 
-<div class="filters">
-  <label>Filter:</label>
-  <button class="filter-btn active" onclick="filterAlerts('ALL', this)">All</button>
-  <button class="filter-btn" onclick="filterAlerts('CRITICAL', this)">Critical</button>
-  <button class="filter-btn" onclick="filterAlerts('HIGH', this)">High</button>
-  <button class="filter-btn" onclick="filterAlerts('MEDIUM', this)">Medium</button>
-  <button class="filter-btn" onclick="filterAlerts('LOW', this)">Low</button>
-  <button class="filter-btn lat-filter" onclick="filterAlerts('LATERAL', this)">Lateral Only</button>
-</div>
+  <div class="toolbar">
+    <span>Filter</span>
+    <button class="pill on" onclick="filter('ALL',this)">All</button>
+    <button class="pill" onclick="filter('CRITICAL',this)">Critical</button>
+    <button class="pill" onclick="filter('HIGH',this)">High</button>
+    <button class="pill" onclick="filter('MEDIUM',this)">Medium</button>
+    <button class="pill" onclick="filter('LOW',this)">Low</button>
+    <button class="pill lat-pill-btn" onclick="filter('LATERAL',this)">Lateral only</button>
+  </div>
 
-<div class="table-wrap">
-  <table id="alert-table">
-    <thead>
-      <tr>
-        <th>Severity</th>
-        <th>Timestamp</th>
-        <th>Detection</th>
-        <th>User</th>
-        <th>IP / Source</th>
-        <th>MITRE</th>
-        <th>Raw</th>
-      </tr>
-    </thead>
-    <tbody id="alert-body">
-      {rows_html if alerts else '<tr><td colspan="7" class="no-results">No alerts to display.</td></tr>'}
-    </tbody>
-  </table>
-</div>
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th></th>
+          <th>Severity</th>
+          <th>Timestamp</th>
+          <th>Detection</th>
+          <th>User</th>
+          <th>IP / source</th>
+          <th>MITRE</th>
+        </tr>
+      </thead>
+      <tbody id="tbody">
+        {rows_html if alerts else '<tr><td colspan="7" class="empty">No alerts to display.</td></tr>'}
+      </tbody>
+    </table>
+  </div>
 
-<div class="footer">
-  <span>SOC Log Analyzer · MITRE ATT&amp;CK Framework</span>
-  <span>{len(alerts)} alerts across {line_count:,} log lines</span>
-</div>
+  <footer>
+    <span>SOC Log Analyzer &nbsp;·&nbsp; MITRE ATT&amp;CK mapped</span>
+    <span>{len(alerts)} alerts across {line_count:,} log lines</span>
+  </footer>
 
+</div>
 <script>
-  const rows = Array.from(document.querySelectorAll('#alert-body tr.alert-row'));
-
-  function filterAlerts(sev, btn) {{
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+  const rows = Array.from(document.querySelectorAll('#tbody tr[data-sev]'));
+  function filter(f, btn) {{
+    document.querySelectorAll('.pill').forEach(b => b.classList.remove('on'));
+    btn.classList.add('on');
     rows.forEach(r => {{
-      if (sev === 'ALL') {{
-        r.style.display = '';
-      }} else if (sev === 'LATERAL') {{
-        r.style.display = r.classList.contains('lateral-row') ? '' : 'none';
-      }} else {{
-        const badge = r.querySelector('.sev-badge');
-        r.style.display = badge && badge.textContent.trim() === sev ? '' : 'none';
-      }}
+      if (f === 'ALL') r.style.display = '';
+      else if (f === 'LATERAL') r.style.display = r.dataset.lat === '1' ? '' : 'none';
+      else r.style.display = r.dataset.sev === f ? '' : 'none';
     }});
   }}
 </script>
