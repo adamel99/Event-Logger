@@ -31,7 +31,7 @@ try:
 except ImportError:
     COLOR = False
 
-# ── MITRE ATT&CK Mapping ──────────────────────────────────────────────────────
+# ── MITRE ATT&CK Mapping 
 
 MITRE = {
     "brute_force":              ("T1110",     "Brute Force"),
