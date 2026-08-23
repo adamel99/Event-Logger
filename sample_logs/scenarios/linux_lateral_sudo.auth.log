@@ -1,0 +1,5 @@
+Jun 12 03:20:01 server sshd[30]: Accepted publickey for jsmith from 10.0.0.9 port 22 ssh2 pts/0
+Jun 12 03:20:40 server sshd[31]: Accepted publickey for jsmith from 10.0.0.11 port 22 ssh2 pts/1
+Jun 12 03:21:00 server sudo[32]: jsmith : TTY=pts/1 ; PWD=/home/jsmith ; USER=root ; COMMAND=/bin/bash
+Jun 12 03:21:30 server sudo[33]: pam_unix(sudo:auth): authentication failure; logname= uid=1001 euid=0 tty=/dev/pts/1 ruser=jsmith rhost= user=jsmith
+Jun 12 03:22:20 server passwd[34]: password changed for svc-backup

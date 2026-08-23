@@ -1,0 +1,4 @@
+Jun 11 14:10:01 server sshd[20]: Accepted publickey for admin from 10.0.0.20 port 22 ssh2 pts/0
+Jun 11 14:10:20 server sudo[21]: admin : TTY=pts/0 ; PWD=/home/admin ; USER=root ; COMMAND=/usr/bin/apt update
+Jun 11 14:11:05 server sudo[22]: admin : TTY=pts/0 ; PWD=/home/admin ; USER=root ; COMMAND=/usr/bin/systemctl restart nginx
+Jun 11 14:12:00 server sshd[23]: session opened for user root by admin(uid=1000)

@@ -1,0 +1,30 @@
+{
+  "brute_force_threshold": 5,
+  "brute_force_window_seconds": 60,
+  "incident_window_seconds": 600,
+  "lateral_ssh_window_seconds": 300,
+  "known_good_ips": [
+    "10.0.0.20",
+    "10.0.0.50"
+  ],
+  "admin_users": [
+    "admin",
+    "jsmith"
+  ],
+  "watchlist_users": [
+    "root",
+    "backdoor",
+    "svc-backup"
+  ],
+  "expected_admin_activity": [
+    {
+      "user": "admin",
+      "source_ip": "10.0.0.20",
+      "host": "server",
+      "allowed_commands": [
+        "/usr/bin/apt update",
+        "/usr/bin/systemctl restart nginx"
+      ]
+    }
+  ]
+}

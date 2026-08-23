@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOC Ticket - sample_logs/windows_security.csv</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  color: #172033;
+  background: #f5f7fb;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.page { max-width: 1180px; margin: 0 auto; padding: 32px; }
+.top {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 22px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+}
+h1 { margin: 0; font-size: 24px; font-weight: 750; color: #0f172a; letter-spacing: 0; }
+.meta, .generated { color: #64748b; font-size: 12px; }
+.meta { margin-top: 6px; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 24px; }
+.card, .ticket, .table-wrap { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04); }
+.card { padding: 16px; }
+.card strong { display: block; font-size: 30px; line-height: 1; margin-bottom: 6px; color: #0f172a; }
+.card span { color: #64748b; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+.ticket { padding: 20px; margin-bottom: 16px; border-left: 4px solid #0f766e; }
+.ticket-head { display: flex; justify-content: space-between; gap: 14px; align-items: flex-start; margin-bottom: 12px; }
+.eyebrow { color: #64748b; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+h2 { margin: 2px 0 0; font-size: 19px; color: #0f172a; letter-spacing: 0; }
+.risk { color: #991b1b; background: #fee2e2; border: 1px solid #fecaca; border-radius: 999px; padding: 5px 11px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+.pill { color: #92400e; background: #fef3c7; border: 1px solid #fde68a; border-radius: 999px; padding: 2px 8px; font-size: 10px; font-weight: 700; vertical-align: middle; }
+dl {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 10px;
+  margin: 0 0 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 12px;
+}
+dt { color: #64748b; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+dd { margin: 2px 0 0; font-family: ui-monospace, "SFMono-Regular", monospace; font-size: 12px; color: #334155; }
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 24px; }
+.verdict-reason { margin: 0 0 16px; color: #475569; background: #f8fafc; border-left: 3px solid #0f766e; padding: 10px 12px; border-radius: 6px; }
+h3 { margin: 0 0 7px; color: #475569; font-size: 12px; font-weight: 750; text-transform: uppercase; letter-spacing: 0.5px; }
+ul { margin: 0; padding-left: 18px; }
+li { margin-bottom: 6px; color: #334155; }
+code { font-family: ui-monospace, "SFMono-Regular", monospace; font-size: 12px; color: #6d28d9; font-weight: 700; }
+.section-title { margin: 26px 0 10px; color: #475569; font-size: 12px; font-weight: 750; text-transform: uppercase; letter-spacing: 0.5px; }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 11px 13px; border-bottom: 1px solid #eef2f7; text-align: left; vertical-align: top; }
+th { color: #64748b; background: #f8fafc; font-size: 11px; font-weight: 750; text-transform: uppercase; letter-spacing: 0.5px; }
+tr:last-child td { border-bottom: 0; }
+@media (max-width: 760px) {
+  .page { padding: 18px; }
+  .top, .ticket-head { display: block; }
+  .generated, .risk { margin-top: 8px; display: inline-block; }
+  .grid { grid-template-columns: 1fr; }
+  .table-wrap { overflow-x: auto; }
+  table { min-width: 560px; }
+}
+</style>
+</head>
+<body>
+  <main class="page">
+    <div class="top">
+      <div>
+        <h1>SOC Triage Ticket</h1>
+        <div class="meta">sample_logs/windows_security.csv</div>
+      </div>
+      <div class="generated">Generated 2026-08-23 05:22:01</div>
+    </div>
+
+    <div class="cards">
+      <div class="card"><strong>1</strong><span>Incidents</span></div>
+      <div class="card"><strong>14</strong><span>Alerts</span></div>
+      <div class="card"><strong>3</strong><span>Lateral indicators</span></div>
+    </div>
+
+    
+      <section class="ticket">
+        <div class="ticket-head">
+          <div>
+            <div class="eyebrow">INC-001 · CRITICAL</div>
+            <h2>Possible Lateral Movement <span class="pill">lateral</span></h2>
+          </div>
+          <div class="risk">Risk 100/100</div>
+        </div>
+        <dl>
+          <div><dt>Window</dt><dd>2026-06-10 09:00:01 -> 2026-06-10 09:04:00</dd></div>
+          <div><dt>Verdict</dt><dd>Likely True Positive (High)</dd></div>
+          <div><dt>Users</dt><dd>alice</dd></div>
+          <div><dt>IPs</dt><dd>10.0.0.55</dd></div>
+          <div><dt>Hosts</dt><dd>unknown</dd></div>
+          <div><dt>Alerts</dt><dd>14</dd></div>
+        </dl>
+        <p class="verdict-reason">High-risk chained behavior or critical activity was observed.</p>
+        <div class="grid">
+          <div><h3>Evidence</h3><ul><li>5 failed logons within 15s</li><li>Successful authentication for alice from 10.0.0.55</li><li>WMI-based remote process execution detected.</li><li>Access to administrative share from remote IP.</li><li>PsExec service or remote execution artifact detected.</li><li>Observed user(s): alice</li></ul></div>
+          <div><h3>Risk Factors</h3><ul><li>+10 highest medium activity present</li><li>+22 highest high activity present</li><li>+35 highest critical activity present</li><li>+25 brute force pattern</li><li>+25 lateral movement indicator</li></ul></div>
+          <div><h3>Timeline</h3><ul><li><code>2026-06-10 09:00:01</code> <strong>HIGH</strong> ⚠  Brute Force Detected (Windows) <code>T1110</code></li><li><code>2026-06-10 09:00:01</code> <strong>MEDIUM</strong> Failed Windows Logon <code>T1110</code></li><li><code>2026-06-10 09:00:05</code> <strong>MEDIUM</strong> Failed Windows Logon <code>T1110</code></li><li><code>2026-06-10 09:00:09</code> <strong>MEDIUM</strong> Failed Windows Logon <code>T1110</code></li><li><code>2026-06-10 09:00:12</code> <strong>MEDIUM</strong> Failed Windows Logon <code>T1110</code></li><li><code>2026-06-10 09:00:16</code> <strong>MEDIUM</strong> Failed Windows Logon <code>T1110</code></li><li><code>2026-06-10 09:01:00</code> <strong>HIGH</strong> RDP Logon (Remote Desktop) <code>T1021.001</code></li><li><code>2026-06-10 09:02:00</code> <strong>HIGH</strong> ⚠ WMI Remote Execution <code>T1047</code></li><li><code>2026-06-10 09:02:00</code> <strong>MEDIUM</strong> Logon with Explicit Credentials <code>T1548</code></li><li><code>2026-06-10 09:02:20</code> <strong>HIGH</strong> ⚠ Admin Share Access (SMB Lateral Movement) <code>T1021.002</code></li><li><code>2026-06-10 09:02:20</code> <strong>MEDIUM</strong> Network Share Accessed <code>T1077</code></li><li><code>2026-06-10 09:03:00</code> <strong>CRITICAL</strong> ⚠ PsExec / Remote Service Execution <code>T1569.002</code></li><li><code>2026-06-10 09:03:00</code> <strong>HIGH</strong> New Service Installed <code>T1543.003</code></li><li><code>2026-06-10 09:04:00</code> <strong>HIGH</strong> ⚠ Audit Log Cleared <code>T1070.001</code></li></ul></div>
+          <div><h3>Analyst Playbook</h3><ul><li>Check whether the same source IP later achieved a successful login.</li><li>Review the targeted account for lockouts, MFA prompts, password changes, and recent privilege use.</li><li>Look up the source IP in firewall, VPN, EDR, and threat intelligence logs.</li><li>Validate whether the login source, time, and account are expected for this user.</li><li>Review commands, process creation, and session activity immediately after authentication.</li><li>Build a host-to-host timeline to determine the original entry point and next pivot.</li></ul></div>
+        </div>
+      </section>
+
+    <div class="section-title">MITRE ATT&amp;CK Summary</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Technique</th><th>Name</th><th>Alerts</th></tr></thead>
+        <tbody>
+        <tr>
+          <td><code>T1110</code></td>
+          <td>Brute Force – Failed Windows Logon</td>
+          <td>6</td>
+        </tr>
+        <tr>
+          <td><code>T1021.001</code></td>
+          <td>Remote Services – RDP</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td><code>T1021.002</code></td>
+          <td>Remote Services – SMB/Windows Admin Shares</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td><code>T1047</code></td>
+          <td>Windows Management Instrumentation</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td><code>T1070.001</code></td>
+          <td>Indicator Removal – Clear Windows Event Logs</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td><code>T1077</code></td>
+          <td>Windows Admin Shares</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td><code>T1543.003</code></td>
+          <td>Create or Modify System Process – Windows Service</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td><code>T1548</code></td>
+          <td>Abuse Elevation Control</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td><code>T1569.002</code></td>
+          <td>System Services – Service Execution (PsExec)</td>
+          <td>1</td>
+        </tr></tbody>
+      </table>
+    </div>
+  </main>
+</body>
+</html>
