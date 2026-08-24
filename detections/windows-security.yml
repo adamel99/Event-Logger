@@ -1,0 +1,67 @@
+rules:
+  - id: WIN-AUTH-004
+    title: RDP Logon
+    logsource: windows_security
+    event_id: 4624
+    severity: HIGH
+    mitre:
+      technique_id: T1021.001
+      technique: Remote Services - RDP
+    detection:
+      selection:
+        LogonType: 10
+      fields:
+        - TargetUserName
+        - Account Name
+        - Source Network Address
+        - Workstation Name
+    false_positives:
+      - Authorized helpdesk or administrator remote access
+      - User connecting from a known VPN address
+    analyst_response:
+      - Validate the source IP, workstation, time, and account owner.
+      - Review process creation and privilege activity after the session.
+      - Check for brute force or failed logons before the successful RDP event.
+
+  - id: WIN-LAT-002
+    title: PsExec or Remote Service Execution
+    logsource: windows_security
+    event_id:
+      - 7045
+      - 4697
+    severity: CRITICAL
+    mitre:
+      technique_id: T1569.002
+      technique: System Services - Service Execution
+    detection:
+      selection:
+        Message|contains:
+          - PSEXESVC
+          - psexec
+          - ADMIN$
+          - RemCom
+    false_positives:
+      - Approved remote administration tooling
+      - Software deployment systems using temporary services
+    analyst_response:
+      - Identify the source account, source host, target host, and installed service name.
+      - Review endpoint telemetry for spawned commands and dropped binaries.
+      - Contain the destination host if execution is not approved.
+
+  - id: WIN-EVASION-001
+    title: Windows Audit Log Cleared
+    logsource: windows_security
+    event_id: 1102
+    severity: HIGH
+    mitre:
+      technique_id: T1070.001
+      technique: Indicator Removal - Clear Windows Event Logs
+    detection:
+      selection:
+        EventID: 1102
+    false_positives:
+      - Rare approved maintenance with documented log rotation
+    analyst_response:
+      - Preserve remaining SIEM, EDR, firewall, and endpoint evidence.
+      - Check for suspicious authentication or remote execution before the clearing event.
+      - Escalate quickly if the action follows lateral movement or privilege activity.

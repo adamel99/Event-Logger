@@ -1,0 +1,53 @@
+rules:
+  - id: LINUX-SSH-003
+    title: Brute Force Followed by SSH Activity
+    logsource: linux_auth
+    severity: HIGH
+    mitre:
+      technique_id: T1110
+      technique: Brute Force
+    detection:
+      selection: "Failed password"
+      correlation: "Five failed SSH logins from the same source IP within 60 seconds"
+    false_positives:
+      - Password managers or automation with stale credentials
+      - Internal vulnerability scanners or jump-box testing
+    analyst_response:
+      - Check whether the same source later achieved a successful login.
+      - Review MFA, VPN, EDR, and firewall activity for the source IP.
+      - Validate password reset, account lockout, and post-login commands.
+
+  - id: LINUX-LAT-003
+    title: Multi-Source SSH Authentication
+    logsource: linux_auth
+    severity: HIGH
+    mitre:
+      technique_id: T1021.004
+      technique: Remote Services - SSH
+    detection:
+      selection: "Accepted password or publickey"
+      correlation: "Same user authenticates from two or more source IPs within the lateral SSH window"
+    false_positives:
+      - Admin using both VPN and jump host during maintenance
+      - Load-balanced bastion hosts
+    analyst_response:
+      - Build a host-to-host timeline for the user.
+      - Confirm whether each source IP is expected for the account.
+      - Check for sudo, new accounts, SSH key changes, and persistence after login.
+
+  - id: LINUX-PRIV-001
+    title: Sudo Command Executed
+    logsource: linux_auth
+    severity: MEDIUM
+    mitre:
+      technique_id: T1548.003
+      technique: Abuse Elevation Control Mechanism - sudo
+    detection:
+      selection: "sudo command event with COMMAND field"
+    false_positives:
+      - Expected patching or service restart activity
+      - Approved administrative maintenance
+    analyst_response:
+      - Review the command, working directory, and user context.
+      - Compare against approved change records.
+      - Escalate if command execution follows suspicious authentication.

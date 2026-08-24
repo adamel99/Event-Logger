@@ -582,6 +582,42 @@ def parse_windows_host(row, message):
             return m.group(1)
     return "unknown"
 
+def extract_windows_field(message, labels):
+    label_pattern = "|".join(re.escape(label) for label in labels)
+    boundary = (
+        r"Account Name|TargetUserName|SubjectUserName|Workstation Name|Source Network Address|"
+        r"Logon Type|Authentication Package|Process Name|Service Name|Share Name|Computer"
+    )
+    m = re.search(
+        rf"(?:{label_pattern})\s*:\s*(?P<value>.*?)(?=\s+(?:{boundary})\s*:|$)",
+        message,
+        re.I,
+    )
+    if not m:
+        return ""
+    value = m.group("value").strip().strip('"')
+    return "" if value in ("", "-", "—") else value
+
+def parse_windows_message(message):
+    target_user = extract_windows_field(message, ["TargetUserName"])
+    account_user = extract_windows_field(message, ["Account Name"])
+    subject_user = extract_windows_field(message, ["SubjectUserName"])
+    candidates = [target_user, account_user, subject_user]
+    user = next((item for item in candidates if item and "$" not in item), "unknown")
+
+    ip = extract_windows_field(message, ["Source Network Address"]) or "—"
+    logon_type = extract_windows_field(message, ["Logon Type"]) or "—"
+    details = {
+        "target_user": target_user or user,
+        "subject_user": subject_user or "—",
+        "workstation": extract_windows_field(message, ["Workstation Name"]) or "—",
+        "source_ip": ip,
+        "logon_type": logon_type,
+        "auth_package": extract_windows_field(message, ["Authentication Package"]) or "—",
+        "process_name": extract_windows_field(message, ["Process Name"]) or "—",
+    }
+    return user, ip, logon_type, details
+
 def top_entities(alerts, field, limit=5):
     counts = defaultdict(int)
     for alert in alerts:
@@ -727,6 +763,48 @@ def playbook_steps(alerts):
         if step not in deduped:
             deduped.append(step)
     return deduped[:6]
+
+def containment_steps(alerts):
+    names = " ".join(a.get("name", "").lower() for a in alerts)
+    steps = []
+    if "brute force" in names or "failed" in names:
+        steps.append("Block or rate-limit the source IP if activity is unauthorized and still active.")
+        steps.append("Reset credentials or enforce MFA for targeted accounts if compromise is suspected.")
+    if "successful" in names or "accepted ssh" in names or "rdp" in names:
+        steps.append("Temporarily disable or isolate the affected account if the login cannot be validated.")
+    if any(a.get("lateral") for a in alerts):
+        steps.append("Isolate affected hosts from peer systems while confirming the pivot path.")
+    if "new user" in names or "account created" in names:
+        steps.append("Disable newly created accounts until ownership and change approval are confirmed.")
+    if "audit log cleared" in names:
+        steps.append("Preserve remaining SIEM, EDR, firewall, and endpoint evidence before normal cleanup.")
+    if not steps:
+        steps.append("Monitor the involved user, host, and source IP while validating business context.")
+    return steps[:5]
+
+def followup_queries(alerts):
+    users = sorted({a.get("user") for a in alerts if a.get("user") not in ("", "unknown", "multiple", "—")})
+    ips = sorted({ip.strip() for a in alerts for ip in str(a.get("ip", "")).split(",") if ip.strip() not in ("", "—")})
+    hosts = sorted({a.get("host") for a in alerts if a.get("host") not in ("", "unknown", "—")})
+    user_filter = " OR ".join(f'user="{user}"' for user in users) or 'user="unknown"'
+    ip_filter = " OR ".join(f'source_ip="{ip}"' for ip in ips) or 'source_ip="unknown"'
+    host_filter = " OR ".join(f'host="{host}"' for host in hosts) or 'host="unknown"'
+    return [
+        f"Search authentication events for ({user_filter}) during the incident window.",
+        f"Search network, VPN, firewall, and EDR telemetry for ({ip_filter}).",
+        f"Search process, service, scheduled task, and account changes for ({host_filter}).",
+    ]
+
+def false_positive_notes(alerts):
+    notes = [
+        "Confirm whether the activity matches an approved change window, helpdesk ticket, admin task, or vulnerability scan.",
+        "Validate whether the source IP belongs to VPN, jump box, scanner, backup, or management infrastructure.",
+    ]
+    if any(triage_context(a)["expected_admin_activity"] for a in alerts):
+        notes.insert(0, "The config marks part of this activity as expected admin behavior.")
+    if any(triage_context(a)["known_good_ip"] for a in alerts):
+        notes.insert(0, "At least one source IP is configured as known-good, but the sequence still needs validation.")
+    return notes[:4]
 
 def evidence_summary(alerts):
     evidence = []
@@ -886,6 +964,9 @@ def build_incidents(alerts):
             "alerts": grouped_alerts,
             "evidence": evidence_summary(grouped_alerts),
             "playbook": playbook_steps(grouped_alerts),
+            "containment": containment_steps(grouped_alerts),
+            "followup_queries": followup_queries(grouped_alerts),
+            "false_positive_notes": false_positive_notes(grouped_alerts),
         })
 
     for incident in incidents:
@@ -904,19 +985,6 @@ def detect_format(filepath):
 
 # ── Windows CSV Parser ────────────────────────────────────────────────────────
 
-def parse_windows_message(message):
-    user, ip, logon_type = "unknown", "—", "—"
-    m = re.search(r"Account Name:\s+(\S+)", message)
-    if m and "$" not in m.group(1):
-        user = m.group(1)
-    m = re.search(r"Source Network Address:\s+([\d\.]+)", message)
-    if m:
-        ip = m.group(1)
-    m = re.search(r"Logon Type:\s+(\d+)", message)
-    if m:
-        logon_type = m.group(1)
-    return user, ip, logon_type
-
 def analyze_windows(filepath, severity_filter=None):
     alerts = []
     failed_by_ip = defaultdict(list)
@@ -933,8 +1001,14 @@ def analyze_windows(filepath, severity_filter=None):
             message   = (row.get("Message") or "").strip().strip('"')
 
             ts = parse_timestamp(time_raw) or parse_timestamp(message)
-            user, ip, logon_type = parse_windows_message(message)
+            user, ip, logon_type, win_fields = parse_windows_message(message)
             host = parse_windows_host(row, message)
+            cmd_parts = [f"EventID:{event_id}", f"LogonType:{logon_type}"]
+            if win_fields["auth_package"] != "—":
+                cmd_parts.append(f"AuthPackage:{win_fields['auth_package']}")
+            if win_fields["process_name"] != "—":
+                cmd_parts.append(f"Process:{win_fields['process_name']}")
+            cmd = "  ".join(cmd_parts)
 
             # ── Lateral movement rules (checked first, higher priority) ──────
             for lat_rule in _WIN_LATERAL_BY_ID.get(event_id, []):
@@ -952,11 +1026,12 @@ def analyze_windows(filepath, severity_filter=None):
                         "user":        user,
                         "ip":          ip,
                         "host":        host,
-                        "cmd":         f"EventID:{event_id}  LogonType:{logon_type}",
+                        "cmd":         cmd,
                         "mitre_id":    mitre_id,
                         "mitre_name":  mitre_name,
                         "description": lat_rule.get("description", ""),
                         "lateral":     True,
+                        "windows_fields": win_fields,
                         "raw":         message[:120],
                     })
 
@@ -988,11 +1063,12 @@ def analyze_windows(filepath, severity_filter=None):
                 "user":        user,
                 "ip":          ip,
                 "host":        host,
-                "cmd":         f"EventID:{event_id}  LogonType:{logon_type}",
+                "cmd":         cmd,
                 "mitre_id":    mitre_id,
                 "mitre_name":  mitre_name,
                 "description": "",
                 "lateral":     False,
+                "windows_fields": win_fields,
                 "raw":         message[:120],
             })
 
@@ -1727,12 +1803,18 @@ def export_json(alerts, incidents, outfile):
     print(f"\n  [+] JSON exported → {outfile}\n")
 
 def export_ticket(incidents, alerts, filepath, outfile):
+    highest = highest_severity(alerts)
     lines = [
         f"# SOC Triage Ticket: {filepath}",
         "",
         f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         f"Incidents: {len(incidents)}",
         f"Alerts: {len(alerts)}",
+        f"Highest Severity: {highest}",
+        "",
+        "## Executive Summary",
+        "",
+        f"The analyzer reviewed `{filepath}` and grouped {len(alerts)} alert(s) into {len(incidents)} incident case(s). Use this ticket as a starting point for validation, containment, and evidence collection.",
         "",
         "## MITRE ATT&CK Summary",
         "",
@@ -1763,10 +1845,26 @@ def export_ticket(incidents, alerts, filepath, outfile):
             lines.append(f"- {item}")
         lines.extend(["", "### Timeline", ""])
         for alert in incident["alerts"]:
-            lines.append(f"- `{alert['timestamp']}` [{alert['severity']}] `{alert.get('detection_id', 'NO-ID')}` {alert['name']} (`{alert['mitre_id']}`) host={alert.get('host', 'unknown')}")
+            detail = ""
+            fields = alert.get("windows_fields")
+            if fields:
+                detail = (
+                    f" target={fields.get('target_user', '—')} subject={fields.get('subject_user', '—')}"
+                    f" workstation={fields.get('workstation', '—')} auth={fields.get('auth_package', '—')}"
+                )
+            lines.append(f"- `{alert['timestamp']}` [{alert['severity']}] `{alert.get('detection_id', 'NO-ID')}` {alert['name']} (`{alert['mitre_id']}`) host={alert.get('host', 'unknown')}{detail}")
         lines.extend(["", "### Analyst Playbook", ""])
         for step in incident["playbook"]:
             lines.append(f"- {step}")
+        lines.extend(["", "### Recommended Containment", ""])
+        for step in incident["containment"]:
+            lines.append(f"- {step}")
+        lines.extend(["", "### Follow-Up Queries", ""])
+        for query in incident["followup_queries"]:
+            lines.append(f"- {query}")
+        lines.extend(["", "### False Positive Considerations", ""])
+        for note in incident["false_positive_notes"]:
+            lines.append(f"- {note}")
         lines.extend(["", "### Risk Factors", ""])
         for reason in incident["risk_reasons"]:
             lines.append(f"- {reason}")
@@ -1801,6 +1899,9 @@ def export_ticket_html(incidents, alerts, filepath, outfile):
             for alert in incident["alerts"]
         )
         playbook = "".join(f"<li>{html_lib.escape(step)}</li>" for step in incident["playbook"])
+        containment = "".join(f"<li>{html_lib.escape(step)}</li>" for step in incident["containment"])
+        followups = "".join(f"<li>{html_lib.escape(query)}</li>" for query in incident["followup_queries"])
+        fp_notes = "".join(f"<li>{html_lib.escape(note)}</li>" for note in incident["false_positive_notes"])
         risk_reasons = "".join(f"<li>{html_lib.escape(reason)}</li>" for reason in incident["risk_reasons"])
         lateral = '<span class="pill">lateral</span>' if incident["lateral"] else ""
 
@@ -1827,6 +1928,9 @@ def export_ticket_html(incidents, alerts, filepath, outfile):
           <div><h3>Risk Factors</h3><ul>{risk_reasons}</ul></div>
           <div><h3>Timeline</h3><ul>{timeline}</ul></div>
           <div><h3>Analyst Playbook</h3><ul>{playbook}</ul></div>
+          <div><h3>Recommended Containment</h3><ul>{containment}</ul></div>
+          <div><h3>Follow-Up Queries</h3><ul>{followups}</ul></div>
+          <div><h3>False Positive Considerations</h3><ul>{fp_notes}</ul></div>
         </div>
       </section>"""
 
@@ -1862,6 +1966,7 @@ body {{
 h1 {{ margin: 0; font-size: 24px; font-weight: 750; color: #0f172a; letter-spacing: 0; }}
 .meta, .generated {{ color: #64748b; font-size: 12px; }}
 .meta {{ margin-top: 6px; }}
+.summary {{ max-width: 760px; margin: 12px 0 0; color: #475569; font-size: 13px; }}
 .cards {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 24px; }}
 .card, .ticket, .table-wrap {{ background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04); }}
 .card {{ padding: 16px; }}
@@ -1912,6 +2017,7 @@ tr:last-child td {{ border-bottom: 0; }}
       <div>
         <h1>SOC Triage Ticket</h1>
         <div class="meta">{html_lib.escape(filepath)}</div>
+        <p class="summary">Case-ready incident notes with evidence, timeline, containment, follow-up searches, and false-positive review context.</p>
       </div>
       <div class="generated">Generated {generated_at}</div>
     </div>

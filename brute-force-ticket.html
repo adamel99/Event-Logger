@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOC Ticket - sample_logs/scenarios/linux_bruteforce_success.auth.log</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  color: #172033;
+  background: #f5f7fb;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.page { max-width: 1180px; margin: 0 auto; padding: 32px; }
+.top {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 22px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+}
+h1 { margin: 0; font-size: 24px; font-weight: 750; color: #0f172a; letter-spacing: 0; }
+.meta, .generated { color: #64748b; font-size: 12px; }
+.meta { margin-top: 6px; }
+.summary { max-width: 760px; margin: 12px 0 0; color: #475569; font-size: 13px; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 24px; }
+.card, .ticket, .table-wrap { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04); }
+.card { padding: 16px; }
+.card strong { display: block; font-size: 30px; line-height: 1; margin-bottom: 6px; color: #0f172a; }
+.card span { color: #64748b; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+.ticket { padding: 20px; margin-bottom: 16px; border-left: 4px solid #0f766e; }
+.ticket-head { display: flex; justify-content: space-between; gap: 14px; align-items: flex-start; margin-bottom: 12px; }
+.eyebrow { color: #64748b; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+h2 { margin: 2px 0 0; font-size: 19px; color: #0f172a; letter-spacing: 0; }
+.risk { color: #991b1b; background: #fee2e2; border: 1px solid #fecaca; border-radius: 999px; padding: 5px 11px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+.pill { color: #92400e; background: #fef3c7; border: 1px solid #fde68a; border-radius: 999px; padding: 2px 8px; font-size: 10px; font-weight: 700; vertical-align: middle; }
+dl {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 10px;
+  margin: 0 0 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 12px;
+}
+dt { color: #64748b; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+dd { margin: 2px 0 0; font-family: ui-monospace, "SFMono-Regular", monospace; font-size: 12px; color: #334155; }
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 24px; }
+.verdict-reason { margin: 0 0 16px; color: #475569; background: #f8fafc; border-left: 3px solid #0f766e; padding: 10px 12px; border-radius: 6px; }
+h3 { margin: 0 0 7px; color: #475569; font-size: 12px; font-weight: 750; text-transform: uppercase; letter-spacing: 0.5px; }
+ul { margin: 0; padding-left: 18px; }
+li { margin-bottom: 6px; color: #334155; }
+code { font-family: ui-monospace, "SFMono-Regular", monospace; font-size: 12px; color: #6d28d9; font-weight: 700; }
+.section-title { margin: 26px 0 10px; color: #475569; font-size: 12px; font-weight: 750; text-transform: uppercase; letter-spacing: 0.5px; }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 11px 13px; border-bottom: 1px solid #eef2f7; text-align: left; vertical-align: top; }
+th { color: #64748b; background: #f8fafc; font-size: 11px; font-weight: 750; text-transform: uppercase; letter-spacing: 0.5px; }
+tr:last-child td { border-bottom: 0; }
+@media (max-width: 760px) {
+  .page { padding: 18px; }
+  .top, .ticket-head { display: block; }
+  .generated, .risk { margin-top: 8px; display: inline-block; }
+  .grid { grid-template-columns: 1fr; }
+  .table-wrap { overflow-x: auto; }
+  table { min-width: 560px; }
+}
+</style>
+</head>
+<body>
+  <main class="page">
+    <div class="top">
+      <div>
+        <h1>SOC Triage Ticket</h1>
+        <div class="meta">sample_logs/scenarios/linux_bruteforce_success.auth.log</div>
+        <p class="summary">Case-ready incident notes with evidence, timeline, containment, follow-up searches, and false-positive review context.</p>
+      </div>
+      <div class="generated">Generated 2026-08-23 20:03:26</div>
+    </div>
+
+    <div class="cards">
+      <div class="card"><strong>2</strong><span>Incidents</span></div>
+      <div class="card"><strong>12</strong><span>Alerts</span></div>
+      <div class="card"><strong>0</strong><span>Lateral indicators</span></div>
+    </div>
+
+    
+      <section class="ticket">
+        <div class="ticket-head">
+          <div>
+            <div class="eyebrow">INC-001 · HIGH</div>
+            <h2>Possible Compromise After Brute Force </h2>
+          </div>
+          <div class="risk">Risk 100/100</div>
+        </div>
+        <dl>
+          <div><dt>Window</dt><dd>2026-06-10 09:00:01 -> 2026-06-10 09:04:00</dd></div>
+          <div><dt>Verdict</dt><dd>Likely True Positive (High)</dd></div>
+          <div><dt>Users</dt><dd>root</dd></div>
+          <div><dt>IPs</dt><dd>10.0.0.5</dd></div>
+          <div><dt>Hosts</dt><dd>server</dd></div>
+          <div><dt>Alerts</dt><dd>11</dd></div>
+        </dl>
+        <p class="verdict-reason">High-risk chained behavior or critical activity was observed.</p>
+        <div class="grid">
+          <div><h3>Evidence</h3><ul><li>5 failed logins within 8s</li><li>Successful authentication for root from 10.0.0.5</li><li>Privilege activity by root: /usr/bin/cat /etc/shadow</li><li>Observed user(s): root</li><li>Observed source IP(s): 10.0.0.5</li></ul></div>
+          <div><h3>Risk Factors</h3><ul><li>+10 highest medium activity present</li><li>+3 highest low activity present</li><li>+22 highest high activity present</li><li>+25 brute force pattern</li><li>+30 successful login after authentication failures</li><li>+20 privilege or root activity</li></ul></div>
+          <div><h3>Timeline</h3><ul><li><code>2026-06-10 09:00:01</code> <strong>HIGH</strong> ⚠  Brute Force Detected <code>T1110</code></li><li><code>2026-06-10 09:00:01</code> <strong>MEDIUM</strong> Failed SSH Login <code>T1110.004</code></li><li><code>2026-06-10 09:00:03</code> <strong>MEDIUM</strong> Failed SSH Login <code>T1110.004</code></li><li><code>2026-06-10 09:00:05</code> <strong>MEDIUM</strong> Failed SSH Login <code>T1110.004</code></li><li><code>2026-06-10 09:00:07</code> <strong>MEDIUM</strong> Failed SSH Login <code>T1110.004</code></li><li><code>2026-06-10 09:00:09</code> <strong>MEDIUM</strong> Failed SSH Login <code>T1110.004</code></li><li><code>2026-06-10 09:00:45</code> <strong>HIGH</strong> Root Login <code>T1078.003</code></li><li><code>2026-06-10 09:00:45</code> <strong>LOW</strong> Accepted SSH Login <code>T1021.004</code></li><li><code>2026-06-10 09:02:00</code> <strong>MEDIUM</strong> sudo – Command Executed <code>T1548.003</code></li><li><code>2026-06-10 09:04:00</code> <strong>HIGH</strong> Root Login <code>T1078.003</code></li><li><code>2026-06-10 09:04:00</code> <strong>LOW</strong> Session Opened <code>T1078</code></li></ul></div>
+          <div><h3>Analyst Playbook</h3><ul><li>Check whether the same source IP later achieved a successful login.</li><li>Review the targeted account for lockouts, MFA prompts, password changes, and recent privilege use.</li><li>Look up the source IP in firewall, VPN, EDR, and threat intelligence logs.</li><li>Validate whether the login source, time, and account are expected for this user.</li><li>Review commands, process creation, and session activity immediately after authentication.</li><li>Review privileged commands and confirm they match an approved admin change.</li></ul></div>
+          <div><h3>Recommended Containment</h3><ul><li>Block or rate-limit the source IP if activity is unauthorized and still active.</li><li>Reset credentials or enforce MFA for targeted accounts if compromise is suspected.</li><li>Temporarily disable or isolate the affected account if the login cannot be validated.</li></ul></div>
+          <div><h3>Follow-Up Queries</h3><ul><li>Search authentication events for (user=&quot;root&quot;) during the incident window.</li><li>Search network, VPN, firewall, and EDR telemetry for (source_ip=&quot;10.0.0.5&quot;).</li><li>Search process, service, scheduled task, and account changes for (host=&quot;server&quot;).</li></ul></div>
+          <div><h3>False Positive Considerations</h3><ul><li>Confirm whether the activity matches an approved change window, helpdesk ticket, admin task, or vulnerability scan.</li><li>Validate whether the source IP belongs to VPN, jump box, scanner, backup, or management infrastructure.</li></ul></div>
+        </div>
+      </section>
+      <section class="ticket">
+        <div class="ticket-head">
+          <div>
+            <div class="eyebrow">INC-002 · HIGH</div>
+            <h2>Suspicious Account Management </h2>
+          </div>
+          <div class="risk">Risk 47/100</div>
+        </div>
+        <dl>
+          <div><dt>Window</dt><dd>2026-06-10 09:03:00 -> 2026-06-10 09:03:00</dd></div>
+          <div><dt>Verdict</dt><dd>Informational (Low)</dd></div>
+          <div><dt>Users</dt><dd>backdoor</dd></div>
+          <div><dt>IPs</dt><dd>—</dd></div>
+          <div><dt>Hosts</dt><dd>server</dd></div>
+          <div><dt>Alerts</dt><dd>1</dd></div>
+        </dl>
+        <p class="verdict-reason">Low-risk activity with limited malicious indicators.</p>
+        <div class="grid">
+          <div><h3>Evidence</h3><ul><li>Account creation observed for backdoor</li><li>Observed user(s): backdoor</li></ul></div>
+          <div><h3>Risk Factors</h3><ul><li>+22 highest high activity present</li><li>+25 account creation</li></ul></div>
+          <div><h3>Timeline</h3><ul><li><code>2026-06-10 09:03:00</code> <strong>HIGH</strong> New User Created <code>T1136</code></li></ul></div>
+          <div><h3>Analyst Playbook</h3><ul><li>Confirm the account owner, ticket/change request, group membership, and UID/GID values.</li><li>Disable or contain the account if ownership cannot be validated quickly.</li></ul></div>
+          <div><h3>Recommended Containment</h3><ul><li>Disable newly created accounts until ownership and change approval are confirmed.</li></ul></div>
+          <div><h3>Follow-Up Queries</h3><ul><li>Search authentication events for (user=&quot;backdoor&quot;) during the incident window.</li><li>Search network, VPN, firewall, and EDR telemetry for (source_ip=&quot;unknown&quot;).</li><li>Search process, service, scheduled task, and account changes for (host=&quot;server&quot;).</li></ul></div>
+          <div><h3>False Positive Considerations</h3><ul><li>Confirm whether the activity matches an approved change window, helpdesk ticket, admin task, or vulnerability scan.</li><li>Validate whether the source IP belongs to VPN, jump box, scanner, backup, or management infrastructure.</li></ul></div>
+        </div>
+      </section>
+
+    <div class="section-title">MITRE ATT&amp;CK Summary</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Technique</th><th>Name</th><th>Alerts</th></tr></thead>
+        <tbody>
+        <tr>
+          <td><code>T1110.004</code></td>
+          <td>Brute Force – Credential Stuffing</td>
+          <td>5</td>
+        </tr>
+        <tr>
+          <td><code>T1078.003</code></td>
+          <td>Valid Accounts – Local Accounts (root)</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <td><code>T1021.004</code></td>
+          <td>Remote Services – SSH</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td><code>T1078</code></td>
+          <td>Valid Accounts – Session</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td><code>T1110</code></td>
+          <td>Brute Force</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td><code>T1136</code></td>
+          <td>Create Account</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td><code>T1548.003</code></td>
+          <td>Abuse Elevation Control – sudo</td>
+          <td>1</td>
+        </tr></tbody>
+      </table>
+    </div>
+  </main>
+</body>
+</html>

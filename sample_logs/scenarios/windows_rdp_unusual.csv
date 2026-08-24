@@ -1,0 +1,4 @@
+"Id","TimeCreated","MachineName","Message"
+"4625","2026-06-13 21:41:01","WIN-DC01","An account failed to log on. TargetUserName: mgarcia SubjectUserName: - Account Name: mgarcia Source Network Address: 203.0.113.77 Workstation Name: UNKNOWN Logon Type: 10 Authentication Package: Negotiate Process Name: C:\Windows\System32\winlogon.exe"
+"4625","2026-06-13 21:41:12","WIN-DC01","An account failed to log on. TargetUserName: mgarcia SubjectUserName: - Account Name: mgarcia Source Network Address: 203.0.113.77 Workstation Name: UNKNOWN Logon Type: 10 Authentication Package: Negotiate Process Name: C:\Windows\System32\winlogon.exe"
+"4624","2026-06-13 21:42:30","WIN-SRV02","An account was successfully logged on. TargetUserName: mgarcia SubjectUserName: WIN-SRV02$ Account Name: mgarcia Source Network Address: 203.0.113.77 Workstation Name: LAPTOP-445 Logon Type: 10 Authentication Package: Negotiate Process Name: C:\Windows\System32\winlogon.exe"

@@ -60,6 +60,16 @@ python3 analyzer.py --file sample_logs/windows_security.csv --ticket windows-tic
 
 Parses the Windows Event Log CSV sample, detects Windows authentication and lateral movement indicators, then exports `windows-ticket.md` and a browser-friendly `windows-ticket.html`.
 
+### Run the recruiter demo path
+
+```bash
+python3 analyzer.py --list-rules
+python3 analyzer.py --file sample_logs/scenarios/linux_bruteforce_success.auth.log --ticket brute-force-ticket.md
+python3 analyzer.py --file sample_logs/scenarios/windows_psexec_lateral.csv --ticket windows-psexec-ticket.md --html report.html
+```
+
+Shows the detection catalog, a Linux compromise investigation, and a Windows lateral movement investigation with analyst-ready tickets.
+
 ## Scenario Demo Commands
 
 ### Linux brute force followed by compromise
@@ -86,6 +96,22 @@ python3 analyzer.py --file sample_logs/scenarios/linux_lateral_sudo.auth.log --h
 ```
 
 Runs a focused lateral movement scenario where the same user authenticates from multiple IPs and then performs sudo activity. Exports the visual dashboard to `report.html`.
+
+### Windows RDP from unusual source
+
+```bash
+python3 analyzer.py --file sample_logs/scenarios/windows_rdp_unusual.csv --ticket windows-rdp-ticket.md
+```
+
+Runs a focused Windows scenario with RDP logon activity and extracted Windows fields such as source IP, workstation, logon type, authentication package, and process name.
+
+### Windows PsExec lateral movement
+
+```bash
+python3 analyzer.py --file sample_logs/scenarios/windows_psexec_lateral.csv --ticket windows-psexec-ticket.md --html report.html
+```
+
+Runs a Windows scenario with failed logons, successful network logon, PsExec-style service installation, and audit log clearing.
 
 ## Common Options
 

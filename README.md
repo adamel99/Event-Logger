@@ -15,9 +15,12 @@ Every detection includes:
 - MITRE ATT&CK technique mapping
 - Severity classification
 - Human-readable explanation
+- Explainable detection rule IDs and YAML rule documentation
 - Incident case grouping
 - Chronological investigation timeline
 - Analyst playbook guidance
+- Recommended containment and follow-up search guidance
+- False-positive considerations
 - Risk scoring and evidence summaries
 - Analyst verdict and confidence
 - Detection rule IDs
@@ -31,6 +34,8 @@ Every detection includes:
 - CSV and JSON export
 
 The project supports both Windows Security Event Log exports and Linux authentication logs.
+
+For a short portfolio walkthrough, see [DEMO.md](DEMO.md).
 
 ---
 
@@ -326,6 +331,8 @@ The `sample_logs/scenarios/` folder contains focused logs for demos and testing:
 sample_logs/scenarios/linux_bruteforce_success.auth.log
 sample_logs/scenarios/linux_false_positive_admin.auth.log
 sample_logs/scenarios/linux_lateral_sudo.auth.log
+sample_logs/scenarios/windows_rdp_unusual.csv
+sample_logs/scenarios/windows_psexec_lateral.csv
 sample_logs/windows_security.csv
 ```
 
@@ -335,8 +342,12 @@ Example commands:
 python3 analyzer.py --file sample_logs/scenarios/linux_bruteforce_success.auth.log --ticket brute-force-ticket.md
 python3 analyzer.py --file sample_logs/scenarios/linux_false_positive_admin.auth.log --config config/demo_config.json
 python3 analyzer.py --file sample_logs/scenarios/linux_lateral_sudo.auth.log --html report.html
+python3 analyzer.py --file sample_logs/scenarios/windows_rdp_unusual.csv --ticket windows-rdp-ticket.md
+python3 analyzer.py --file sample_logs/scenarios/windows_psexec_lateral.csv --ticket windows-psexec-ticket.md --html report.html
 python3 analyzer.py --file sample_logs/windows_security.csv --json windows-report.json
 ```
+
+See [docs/scenarios.md](docs/scenarios.md) for expected findings and analyst interpretation notes for each scenario.
 
 ## Config File
 
@@ -426,11 +437,26 @@ python3 analyzer.py --file sample_logs/auth.log --ticket incident-ticket.md
 The ticket includes:
 
 - Incident title, severity, risk score, affected users, and source IPs
+- Executive summary
 - Evidence summary
 - Timeline
 - Analyst playbook
+- Recommended containment
+- Follow-up searches
+- False-positive considerations
 - Risk factors
 - MITRE ATT&CK summary
+
+## Detection Rule Content
+
+Readable detection rule documentation lives in:
+
+```text
+detections/linux-auth.yml
+detections/windows-security.yml
+```
+
+These files explain the rule IDs, log source, detection logic, false-positive notes, MITRE ATT&CK mapping, severity, and analyst response steps.
 
 ---
 

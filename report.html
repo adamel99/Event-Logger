@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SOC Report — sample_logs/auth.log</title>
+<title>SOC Report — sample_logs/scenarios/windows_psexec_lateral.csv</title>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -238,24 +238,24 @@ footer {
   <div class="top">
     <div>
       <h1>SOC triage report</h1>
-      <div class="meta">sample_logs/auth.log &nbsp;·&nbsp; 12 lines parsed</div>
+      <div class="meta">sample_logs/scenarios/windows_psexec_lateral.csv &nbsp;·&nbsp; 8 lines parsed</div>
     </div>
-    <div class="generated">Generated 2026-08-23 05:22:01</div>
+    <div class="generated">Generated 2026-08-23 20:05:01</div>
   </div>
 
   <div class="cards">
-    <div class="card total"><div class="card-num">18</div><div class="card-label">Total alerts</div></div>
-    <div class="card crit"><div class="card-num">0</div><div class="card-label">Critical</div></div>
-    <div class="card high"><div class="card-num">8</div><div class="card-label">High</div></div>
-    <div class="card med"><div class="card-num">6</div><div class="card-label">Medium</div></div>
-    <div class="card low"><div class="card-num">4</div><div class="card-label">Low</div></div>
-    <div class="card lateral"><div class="card-num">3</div><div class="card-label">Lateral movement</div></div>
+    <div class="card total"><div class="card-num">11</div><div class="card-label">Total alerts</div></div>
+    <div class="card crit"><div class="card-num">2</div><div class="card-label">Critical</div></div>
+    <div class="card high"><div class="card-num">3</div><div class="card-label">High</div></div>
+    <div class="card med"><div class="card-num">5</div><div class="card-label">Medium</div></div>
+    <div class="card low"><div class="card-num">1</div><div class="card-label">Low</div></div>
+    <div class="card lateral"><div class="card-num">2</div><div class="card-label">Lateral movement</div></div>
   </div>
 
   
     <div class="banner">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0;margin-top:1px"><path d="M8 2L14 13H2L8 2Z" stroke="#b45309" stroke-width="1.5" fill="none"/><path d="M8 6v3M8 10.5v.5" stroke="#b45309" stroke-width="1.5" stroke-linecap="round"/></svg>
-      <span><strong>3 lateral movement indicators detected</strong> — review these alerts first.</span>
+      <span><strong>2 lateral movement indicators detected</strong> — review these alerts first.</span>
     </div>
 
   <div class="section-title">Incident cases</div>
@@ -263,120 +263,45 @@ footer {
     <section class="incident">
       <div class="incident-head">
         <div>
-          <div class="incident-id">INC-001 · High</div>
-          <h2>Possible Compromise After Brute Force </h2>
+          <div class="incident-id">INC-001 · Critical</div>
+          <h2>Possible Compromise After Brute Force <span class="lat-pill">lateral</span></h2>
         </div>
-        <div class="incident-count">10 alerts · Risk 100/100</div>
+        <div class="incident-count">11 alerts · Risk 100/100</div>
       </div>
       <div class="incident-meta">
         <span>Verdict: <strong>Likely True Positive</strong> (High)</span>
-        <span>2026-06-10 09:00:01 → 2026-06-10 09:04:00</span>
-        <span>Users: <strong>root</strong></span>
-        <span>IPs: <strong>10.0.0.5</strong></span>
-        <span>Hosts: <strong>server</strong></span>
+        <span>2026-06-14 02:10:01 → 2026-06-14 02:14:45</span>
+        <span>Users: <strong>svc-backup</strong></span>
+        <span>IPs: <strong>10.0.0.55</strong></span>
+        <span>Hosts: <strong>WIN-DC01, WIN-SRV01</strong></span>
       </div>
       <div class="incident-grid">
         <div>
           <h3>Evidence</h3>
-          <ul><li>5 failed logins within 8s</li><li>Successful authentication for root from 10.0.0.5</li><li>Observed user(s): root</li><li>Observed source IP(s): 10.0.0.5</li></ul>
+          <ul><li>5 failed logons within 16s</li><li>Network logon via NTLM from remote IP — possible Pass-the-Hash.</li><li>Successful authentication for svc-backup from 10.0.0.55</li><li>PsExec service or remote execution artifact detected.</li><li>Observed user(s): svc-backup</li><li>Observed source IP(s): 10.0.0.55</li></ul>
         </div>
         <div>
           <h3>Risk factors</h3>
-          <ul><li>+3 highest low activity present</li><li>+10 highest medium activity present</li><li>+22 highest high activity present</li><li>+25 brute force pattern</li><li>+30 successful login after authentication failures</li><li>+20 privilege or root activity</li></ul>
+          <ul><li>+22 highest high activity present</li><li>+3 highest low activity present</li><li>+35 highest critical activity present</li><li>+10 highest medium activity present</li><li>+25 brute force pattern</li><li>+30 successful login after authentication failures</li></ul>
         </div>
         <div>
           <h3>Timeline</h3>
           <ul>
-        <li><span class="ts">2026-06-10 09:00:01</span> <strong>HIGH</strong> ⚠  Brute Force Detected <span class="mitre-id inline">T1110</span></li>
-        <li><span class="ts">2026-06-10 09:00:01</span> <strong>MEDIUM</strong> Failed SSH Login <span class="mitre-id inline">T1110.004</span></li>
-        <li><span class="ts">2026-06-10 09:00:03</span> <strong>MEDIUM</strong> Failed SSH Login <span class="mitre-id inline">T1110.004</span></li>
-        <li><span class="ts">2026-06-10 09:00:05</span> <strong>MEDIUM</strong> Failed SSH Login <span class="mitre-id inline">T1110.004</span></li>
-        <li><span class="ts">2026-06-10 09:00:07</span> <strong>MEDIUM</strong> Failed SSH Login <span class="mitre-id inline">T1110.004</span></li>
-        <li><span class="ts">2026-06-10 09:00:09</span> <strong>MEDIUM</strong> Failed SSH Login <span class="mitre-id inline">T1110.004</span></li>
-        <li><span class="ts">2026-06-10 09:00:45</span> <strong>HIGH</strong> Root Login <span class="mitre-id inline">T1078.003</span></li>
-        <li><span class="ts">2026-06-10 09:00:45</span> <strong>LOW</strong> Accepted SSH Login <span class="mitre-id inline">T1021.004</span></li>
-        <li><span class="ts">2026-06-10 09:04:00</span> <strong>HIGH</strong> Root Login <span class="mitre-id inline">T1078.003</span></li>
-        <li><span class="ts">2026-06-10 09:04:00</span> <strong>LOW</strong> Session Opened <span class="mitre-id inline">T1078</span></li></ul>
+        <li><span class="ts">2026-06-14 02:10:01</span> <strong>HIGH</strong> ⚠  Brute Force Detected (Windows) <span class="mitre-id inline">T1110</span></li>
+        <li><span class="ts">2026-06-14 02:10:01</span> <strong>MEDIUM</strong> Failed Windows Logon <span class="mitre-id inline">T1110</span></li>
+        <li><span class="ts">2026-06-14 02:10:05</span> <strong>MEDIUM</strong> Failed Windows Logon <span class="mitre-id inline">T1110</span></li>
+        <li><span class="ts">2026-06-14 02:10:09</span> <strong>MEDIUM</strong> Failed Windows Logon <span class="mitre-id inline">T1110</span></li>
+        <li><span class="ts">2026-06-14 02:10:13</span> <strong>MEDIUM</strong> Failed Windows Logon <span class="mitre-id inline">T1110</span></li>
+        <li><span class="ts">2026-06-14 02:10:17</span> <strong>MEDIUM</strong> Failed Windows Logon <span class="mitre-id inline">T1110</span></li>
+        <li><span class="ts">2026-06-14 02:11:00</span> <strong>CRITICAL</strong> ⚠ Pass-the-Hash Detected <span class="mitre-id inline">T1550.002</span></li>
+        <li><span class="ts">2026-06-14 02:11:00</span> <strong>LOW</strong> Successful Windows Logon <span class="mitre-id inline">T1078</span></li>
+        <li><span class="ts">2026-06-14 02:12:10</span> <strong>CRITICAL</strong> ⚠ PsExec / Remote Service Execution <span class="mitre-id inline">T1569.002</span></li>
+        <li><span class="ts">2026-06-14 02:12:10</span> <strong>HIGH</strong> New Service Installed <span class="mitre-id inline">T1543.003</span></li>
+        <li><span class="ts">2026-06-14 02:14:45</span> <strong>HIGH</strong> ⚠ Audit Log Cleared <span class="mitre-id inline">T1070.001</span></li></ul>
         </div>
         <div>
           <h3>Analyst playbook</h3>
-          <ul><li>Check whether the same source IP later achieved a successful login.</li><li>Review the targeted account for lockouts, MFA prompts, password changes, and recent privilege use.</li><li>Look up the source IP in firewall, VPN, EDR, and threat intelligence logs.</li><li>Validate whether the login source, time, and account are expected for this user.</li><li>Review commands, process creation, and session activity immediately after authentication.</li><li>Review privileged commands and confirm they match an approved admin change.</li></ul>
-        </div>
-      </div>
-    </section>
-    <section class="incident">
-      <div class="incident-head">
-        <div>
-          <div class="incident-id">INC-002 · High</div>
-          <h2>Possible Lateral Movement <span class="lat-pill">lateral</span></h2>
-        </div>
-        <div class="incident-count">7 alerts · Risk 80/100</div>
-      </div>
-      <div class="incident-meta">
-        <span>Verdict: <strong>Needs Review</strong> (Medium)</span>
-        <span>2026-06-10 09:01:00 → 2026-06-10 09:02:20</span>
-        <span>Users: <strong>jsmith</strong></span>
-        <span>IPs: <strong>10.0.0.11, 10.0.0.9</strong></span>
-        <span>Hosts: <strong>server</strong></span>
-      </div>
-      <div class="incident-grid">
-        <div>
-          <h3>Evidence</h3>
-          <ul><li>⚠ SSH Lateral Movement (key-hopping)</li><li>User 'jsmith' authenticated from 2 different IPs within 300s</li><li>Successful authentication for jsmith from 10.0.0.9</li><li>Successful authentication for jsmith from 10.0.0.11</li><li>Privilege activity by jsmith: /bin/bash</li><li>Privilege-related sudo event for jsmith</li></ul>
-        </div>
-        <div>
-          <h3>Risk factors</h3>
-          <ul><li>+3 highest low activity present</li><li>+10 highest medium activity present</li><li>+22 highest high activity present</li><li>+20 privilege or root activity</li><li>+25 lateral movement indicator</li></ul>
-        </div>
-        <div>
-          <h3>Timeline</h3>
-          <ul>
-        <li><span class="ts">2026-06-10 09:01:00</span> <strong>HIGH</strong> ⚠ SSH Lateral Movement (key-hopping) <span class="mitre-id inline">T1021.004</span></li>
-        <li><span class="ts">2026-06-10 09:01:00</span> <strong>HIGH</strong> ⚠ Lateral Movement – Multi-Source SSH <span class="mitre-id inline">T1021.004</span></li>
-        <li><span class="ts">2026-06-10 09:01:00</span> <strong>LOW</strong> Accepted SSH Login <span class="mitre-id inline">T1021.004</span></li>
-        <li><span class="ts">2026-06-10 09:01:30</span> <strong>HIGH</strong> ⚠ SSH Lateral Movement (key-hopping) <span class="mitre-id inline">T1021.004</span></li>
-        <li><span class="ts">2026-06-10 09:01:30</span> <strong>LOW</strong> Accepted SSH Login <span class="mitre-id inline">T1021.004</span></li>
-        <li><span class="ts">2026-06-10 09:02:00</span> <strong>MEDIUM</strong> sudo – Command Executed <span class="mitre-id inline">T1548.003</span></li>
-        <li><span class="ts">2026-06-10 09:02:20</span> <strong>HIGH</strong> sudo – Authentication Failure <span class="mitre-id inline">T1548</span></li></ul>
-        </div>
-        <div>
-          <h3>Analyst playbook</h3>
-          <ul><li>Validate whether the login source, time, and account are expected for this user.</li><li>Review commands, process creation, and session activity immediately after authentication.</li><li>Review privileged commands and confirm they match an approved admin change.</li><li>Check for persistence, new accounts, modified SSH keys, and unusual service changes.</li><li>Build a host-to-host timeline to determine the original entry point and next pivot.</li><li>Check destination hosts for matching logons, admin share access, service creation, WMI, or scheduled tasks.</li></ul>
-        </div>
-      </div>
-    </section>
-    <section class="incident">
-      <div class="incident-head">
-        <div>
-          <div class="incident-id">INC-003 · High</div>
-          <h2>Suspicious Account Management </h2>
-        </div>
-        <div class="incident-count">1 alerts · Risk 47/100</div>
-      </div>
-      <div class="incident-meta">
-        <span>Verdict: <strong>Informational</strong> (Low)</span>
-        <span>2026-06-10 09:03:00 → 2026-06-10 09:03:00</span>
-        <span>Users: <strong>backdoor</strong></span>
-        <span>IPs: <strong>—</strong></span>
-        <span>Hosts: <strong>server</strong></span>
-      </div>
-      <div class="incident-grid">
-        <div>
-          <h3>Evidence</h3>
-          <ul><li>Account creation observed for backdoor</li><li>Observed user(s): backdoor</li></ul>
-        </div>
-        <div>
-          <h3>Risk factors</h3>
-          <ul><li>+22 highest high activity present</li><li>+25 account creation</li></ul>
-        </div>
-        <div>
-          <h3>Timeline</h3>
-          <ul>
-        <li><span class="ts">2026-06-10 09:03:00</span> <strong>HIGH</strong> New User Created <span class="mitre-id inline">T1136</span></li></ul>
-        </div>
-        <div>
-          <h3>Analyst playbook</h3>
-          <ul><li>Confirm the account owner, ticket/change request, group membership, and UID/GID values.</li><li>Disable or contain the account if ownership cannot be validated quickly.</li></ul>
+          <ul><li>Check whether the same source IP later achieved a successful login.</li><li>Review the targeted account for lockouts, MFA prompts, password changes, and recent privilege use.</li><li>Look up the source IP in firewall, VPN, EDR, and threat intelligence logs.</li><li>Validate whether the login source, time, and account are expected for this user.</li><li>Review commands, process creation, and session activity immediately after authentication.</li><li>Build a host-to-host timeline to determine the original entry point and next pivot.</li></ul>
         </div>
       </div>
     </section>
@@ -385,15 +310,15 @@ footer {
   <div class="entity-grid">
     <div class="entity-card">
       <div class="entity-label">Users</div>
-      <div class="entity-list"><span class="entity-chip">root <strong>9</strong></span><span class="entity-chip">jsmith <strong>7</strong></span><span class="entity-chip">backdoor <strong>1</strong></span></div>
+      <div class="entity-list"><span class="entity-chip">svc-backup <strong>10</strong></span></div>
     </div>
     <div class="entity-card">
       <div class="entity-label">Source IPs</div>
-      <div class="entity-list"><span class="entity-chip">10.0.0.5 <strong>8</strong></span><span class="entity-chip">10.0.0.11 <strong>3</strong></span><span class="entity-chip">10.0.0.9 <strong>3</strong></span></div>
+      <div class="entity-list"><span class="entity-chip">10.0.0.55 <strong>11</strong></span></div>
     </div>
     <div class="entity-card">
       <div class="entity-label">Hosts</div>
-      <div class="entity-list"><span class="entity-chip">server <strong>16</strong></span></div>
+      <div class="entity-list"><span class="entity-chip">WIN-DC01 <strong>5</strong></span><span class="entity-chip">WIN-SRV01 <strong>5</strong></span></div>
     </div></div>
 
   <div class="section-title">MITRE ATT&amp;CK summary</div>
@@ -402,43 +327,33 @@ footer {
       <thead><tr><th>Technique</th><th>Name</th><th>Alerts</th></tr></thead>
       <tbody>
       <tr>
-        <td><span class="mitre-id">T1021.004</span></td>
-        <td>Remote Services – SSH</td>
+        <td><span class="mitre-id">T1110</span></td>
+        <td>Brute Force – Failed Windows Logon</td>
         <td class="mono">6</td>
       </tr>
       <tr>
-        <td><span class="mitre-id">T1110.004</span></td>
-        <td>Brute Force – Credential Stuffing</td>
-        <td class="mono">5</td>
-      </tr>
-      <tr>
-        <td><span class="mitre-id">T1078.003</span></td>
-        <td>Valid Accounts – Local Accounts (root)</td>
-        <td class="mono">2</td>
+        <td><span class="mitre-id">T1070.001</span></td>
+        <td>Indicator Removal – Clear Windows Event Logs</td>
+        <td class="mono">1</td>
       </tr>
       <tr>
         <td><span class="mitre-id">T1078</span></td>
-        <td>Valid Accounts – Session</td>
+        <td>Valid Accounts – Successful Logon</td>
         <td class="mono">1</td>
       </tr>
       <tr>
-        <td><span class="mitre-id">T1110</span></td>
-        <td>Brute Force</td>
+        <td><span class="mitre-id">T1543.003</span></td>
+        <td>Create or Modify System Process – Windows Service</td>
         <td class="mono">1</td>
       </tr>
       <tr>
-        <td><span class="mitre-id">T1136</span></td>
-        <td>Create Account</td>
+        <td><span class="mitre-id">T1550.002</span></td>
+        <td>Use Alternate Authentication Material – Pass the Hash</td>
         <td class="mono">1</td>
       </tr>
       <tr>
-        <td><span class="mitre-id">T1548</span></td>
-        <td>Abuse Elevation Control</td>
-        <td class="mono">1</td>
-      </tr>
-      <tr>
-        <td><span class="mitre-id">T1548.003</span></td>
-        <td>Abuse Elevation Control – sudo</td>
+        <td><span class="mitre-id">T1569.002</span></td>
+        <td>System Services – Service Execution (PsExec)</td>
         <td class="mono">1</td>
       </tr></tbody>
     </table>
@@ -471,185 +386,115 @@ footer {
       </thead>
       <tbody id="tbody">
         
-      <tr data-sev="HIGH" data-lat="0">
-        <td><span class="dot" style="background:#ef4444"></span></td>
-        <td class="sev-cell">High</td>
-        <td class="ts">2026-06-10 09:00:45</td>
-        <td><span class="name">Root Login</span><div class="desc">LINUX-AUTH-001</div></td>
-        <td class="mono">root</td>
-        <td class="mono ip">10.0.0.5</td>
-        <td class="mono">server</td>
-        <td><span class="mitre-id">T1078.003</span><span class="mitre-name">Valid Accounts – Local Accounts (root)</span></td>
+      <tr data-sev="CRITICAL" data-lat="1">
+        <td><span class="dot" style="background:#9333ea"></span></td>
+        <td class="sev-cell">Critical</td>
+        <td class="ts">2026-06-14 02:11:00</td>
+        <td><span class="name">Pass-the-Hash Detected</span><span class="lat-pill">lateral</span><div class="desc">WIN-LAT-001</div><div class="desc">Network logon via NTLM from remote IP — possible Pass-the-Hash.</div></td>
+        <td class="mono">svc-backup</td>
+        <td class="mono ip">10.0.0.55</td>
+        <td class="mono">WIN-SRV01</td>
+        <td><span class="mitre-id">T1550.002</span><span class="mitre-name">Use Alternate Authentication Material – Pass the Hash</span></td>
       </tr>
-      <tr data-sev="HIGH" data-lat="1">
-        <td><span class="dot" style="background:#ef4444"></span></td>
-        <td class="sev-cell">High</td>
-        <td class="ts">2026-06-10 09:01:00</td>
-        <td><span class="name">SSH Lateral Movement (key-hopping)</span><span class="lat-pill">lateral</span><div class="desc">LINUX-LAT-001</div></td>
-        <td class="mono">jsmith</td>
-        <td class="mono ip">10.0.0.9</td>
-        <td class="mono">server</td>
-        <td><span class="mitre-id">T1021.004</span><span class="mitre-name">Remote Services – SSH (Lateral)</span></td>
-      </tr>
-      <tr data-sev="HIGH" data-lat="1">
-        <td><span class="dot" style="background:#ef4444"></span></td>
-        <td class="sev-cell">High</td>
-        <td class="ts">2026-06-10 09:01:30</td>
-        <td><span class="name">SSH Lateral Movement (key-hopping)</span><span class="lat-pill">lateral</span><div class="desc">LINUX-LAT-001</div></td>
-        <td class="mono">jsmith</td>
-        <td class="mono ip">10.0.0.11</td>
-        <td class="mono">server</td>
-        <td><span class="mitre-id">T1021.004</span><span class="mitre-name">Remote Services – SSH (Lateral)</span></td>
+      <tr data-sev="CRITICAL" data-lat="1">
+        <td><span class="dot" style="background:#9333ea"></span></td>
+        <td class="sev-cell">Critical</td>
+        <td class="ts">2026-06-14 02:12:10</td>
+        <td><span class="name">PsExec / Remote Service Execution</span><span class="lat-pill">lateral</span><div class="desc">WIN-LAT-002</div><div class="desc">PsExec service or remote execution artifact detected.</div></td>
+        <td class="mono">svc-backup</td>
+        <td class="mono ip">10.0.0.55</td>
+        <td class="mono">WIN-SRV01</td>
+        <td><span class="mitre-id">T1569.002</span><span class="mitre-name">System Services – Service Execution (PsExec)</span></td>
       </tr>
       <tr data-sev="HIGH" data-lat="0">
         <td><span class="dot" style="background:#ef4444"></span></td>
         <td class="sev-cell">High</td>
-        <td class="ts">2026-06-10 09:02:20</td>
-        <td><span class="name">sudo – Authentication Failure</span><div class="desc">LINUX-PRIV-002</div></td>
-        <td class="mono">jsmith</td>
-        <td class="mono ip">—</td>
-        <td class="mono">server</td>
-        <td><span class="mitre-id">T1548</span><span class="mitre-name">Abuse Elevation Control</span></td>
+        <td class="ts">2026-06-14 02:12:10</td>
+        <td><span class="name">New Service Installed</span><div class="desc">WIN-SVC-001</div></td>
+        <td class="mono">svc-backup</td>
+        <td class="mono ip">10.0.0.55</td>
+        <td class="mono">WIN-SRV01</td>
+        <td><span class="mitre-id">T1543.003</span><span class="mitre-name">Create or Modify System Process – Windows Service</span></td>
       </tr>
       <tr data-sev="HIGH" data-lat="0">
         <td><span class="dot" style="background:#ef4444"></span></td>
         <td class="sev-cell">High</td>
-        <td class="ts">2026-06-10 09:03:00</td>
-        <td><span class="name">New User Created</span><div class="desc">LINUX-ACCT-001</div></td>
-        <td class="mono">backdoor</td>
-        <td class="mono ip">—</td>
-        <td class="mono">server</td>
-        <td><span class="mitre-id">T1136</span><span class="mitre-name">Create Account</span></td>
+        <td class="ts">2026-06-14 02:14:45</td>
+        <td><span class="name">Audit Log Cleared</span><div class="desc">WIN-EVASION-001</div></td>
+        <td class="mono">svc-backup</td>
+        <td class="mono ip">10.0.0.55</td>
+        <td class="mono">WIN-SRV01</td>
+        <td><span class="mitre-id">T1070.001</span><span class="mitre-name">Indicator Removal – Clear Windows Event Logs</span></td>
       </tr>
       <tr data-sev="HIGH" data-lat="0">
         <td><span class="dot" style="background:#ef4444"></span></td>
         <td class="sev-cell">High</td>
-        <td class="ts">2026-06-10 09:04:00</td>
-        <td><span class="name">Root Login</span><div class="desc">LINUX-AUTH-001</div></td>
-        <td class="mono">root</td>
-        <td class="mono ip">—</td>
-        <td class="mono">server</td>
-        <td><span class="mitre-id">T1078.003</span><span class="mitre-name">Valid Accounts – Local Accounts (root)</span></td>
-      </tr>
-      <tr data-sev="HIGH" data-lat="1">
-        <td><span class="dot" style="background:#ef4444"></span></td>
-        <td class="sev-cell">High</td>
-        <td class="ts">2026-06-10 09:01:00</td>
-        <td><span class="name">Lateral Movement – Multi-Source SSH</span><span class="lat-pill">lateral</span><div class="desc">LINUX-LAT-003</div><div class="desc">User 'jsmith' authenticated from 2 different IPs within 300s</div></td>
-        <td class="mono">jsmith</td>
-        <td class="mono ip">10.0.0.11, 10.0.0.9</td>
-        <td class="mono">unknown</td>
-        <td><span class="mitre-id">T1021.004</span><span class="mitre-name">Remote Services – SSH (Lateral)</span></td>
-      </tr>
-      <tr data-sev="HIGH" data-lat="0">
-        <td><span class="dot" style="background:#ef4444"></span></td>
-        <td class="sev-cell">High</td>
-        <td class="ts">2026-06-10 09:00:01</td>
-        <td><span class="name">Brute Force Detected</span><div class="desc">LINUX-SSH-003</div><div class="desc">5 failed logins within 8s</div></td>
+        <td class="ts">2026-06-14 02:10:01</td>
+        <td><span class="name">Brute Force Detected (Windows)</span><div class="desc">WIN-AUTH-005</div><div class="desc">5 failed logons within 16s</div></td>
         <td class="mono">multiple</td>
-        <td class="mono ip">10.0.0.5</td>
+        <td class="mono ip">10.0.0.55</td>
         <td class="mono">unknown</td>
         <td><span class="mitre-id">T1110</span><span class="mitre-name">Brute Force</span></td>
       </tr>
       <tr data-sev="MEDIUM" data-lat="0">
         <td><span class="dot" style="background:#f59e0b"></span></td>
         <td class="sev-cell">Medium</td>
-        <td class="ts">2026-06-10 09:00:01</td>
-        <td><span class="name">Failed SSH Login</span><div class="desc">LINUX-SSH-001</div></td>
-        <td class="mono">root</td>
-        <td class="mono ip">10.0.0.5</td>
-        <td class="mono">server</td>
-        <td><span class="mitre-id">T1110.004</span><span class="mitre-name">Brute Force – Credential Stuffing</span></td>
+        <td class="ts">2026-06-14 02:10:01</td>
+        <td><span class="name">Failed Windows Logon</span><div class="desc">WIN-AUTH-001</div></td>
+        <td class="mono">svc-backup</td>
+        <td class="mono ip">10.0.0.55</td>
+        <td class="mono">WIN-DC01</td>
+        <td><span class="mitre-id">T1110</span><span class="mitre-name">Brute Force – Failed Windows Logon</span></td>
       </tr>
       <tr data-sev="MEDIUM" data-lat="0">
         <td><span class="dot" style="background:#f59e0b"></span></td>
         <td class="sev-cell">Medium</td>
-        <td class="ts">2026-06-10 09:00:03</td>
-        <td><span class="name">Failed SSH Login</span><div class="desc">LINUX-SSH-001</div></td>
-        <td class="mono">root</td>
-        <td class="mono ip">10.0.0.5</td>
-        <td class="mono">server</td>
-        <td><span class="mitre-id">T1110.004</span><span class="mitre-name">Brute Force – Credential Stuffing</span></td>
+        <td class="ts">2026-06-14 02:10:05</td>
+        <td><span class="name">Failed Windows Logon</span><div class="desc">WIN-AUTH-001</div></td>
+        <td class="mono">svc-backup</td>
+        <td class="mono ip">10.0.0.55</td>
+        <td class="mono">WIN-DC01</td>
+        <td><span class="mitre-id">T1110</span><span class="mitre-name">Brute Force – Failed Windows Logon</span></td>
       </tr>
       <tr data-sev="MEDIUM" data-lat="0">
         <td><span class="dot" style="background:#f59e0b"></span></td>
         <td class="sev-cell">Medium</td>
-        <td class="ts">2026-06-10 09:00:05</td>
-        <td><span class="name">Failed SSH Login</span><div class="desc">LINUX-SSH-001</div></td>
-        <td class="mono">root</td>
-        <td class="mono ip">10.0.0.5</td>
-        <td class="mono">server</td>
-        <td><span class="mitre-id">T1110.004</span><span class="mitre-name">Brute Force – Credential Stuffing</span></td>
+        <td class="ts">2026-06-14 02:10:09</td>
+        <td><span class="name">Failed Windows Logon</span><div class="desc">WIN-AUTH-001</div></td>
+        <td class="mono">svc-backup</td>
+        <td class="mono ip">10.0.0.55</td>
+        <td class="mono">WIN-DC01</td>
+        <td><span class="mitre-id">T1110</span><span class="mitre-name">Brute Force – Failed Windows Logon</span></td>
       </tr>
       <tr data-sev="MEDIUM" data-lat="0">
         <td><span class="dot" style="background:#f59e0b"></span></td>
         <td class="sev-cell">Medium</td>
-        <td class="ts">2026-06-10 09:00:07</td>
-        <td><span class="name">Failed SSH Login</span><div class="desc">LINUX-SSH-001</div></td>
-        <td class="mono">root</td>
-        <td class="mono ip">10.0.0.5</td>
-        <td class="mono">server</td>
-        <td><span class="mitre-id">T1110.004</span><span class="mitre-name">Brute Force – Credential Stuffing</span></td>
+        <td class="ts">2026-06-14 02:10:13</td>
+        <td><span class="name">Failed Windows Logon</span><div class="desc">WIN-AUTH-001</div></td>
+        <td class="mono">svc-backup</td>
+        <td class="mono ip">10.0.0.55</td>
+        <td class="mono">WIN-DC01</td>
+        <td><span class="mitre-id">T1110</span><span class="mitre-name">Brute Force – Failed Windows Logon</span></td>
       </tr>
       <tr data-sev="MEDIUM" data-lat="0">
         <td><span class="dot" style="background:#f59e0b"></span></td>
         <td class="sev-cell">Medium</td>
-        <td class="ts">2026-06-10 09:00:09</td>
-        <td><span class="name">Failed SSH Login</span><div class="desc">LINUX-SSH-001</div></td>
-        <td class="mono">root</td>
-        <td class="mono ip">10.0.0.5</td>
-        <td class="mono">server</td>
-        <td><span class="mitre-id">T1110.004</span><span class="mitre-name">Brute Force – Credential Stuffing</span></td>
-      </tr>
-      <tr data-sev="MEDIUM" data-lat="0">
-        <td><span class="dot" style="background:#f59e0b"></span></td>
-        <td class="sev-cell">Medium</td>
-        <td class="ts">2026-06-10 09:02:00</td>
-        <td><span class="name">sudo – Command Executed</span><div class="desc">LINUX-PRIV-001</div></td>
-        <td class="mono">jsmith</td>
-        <td class="mono ip">—</td>
-        <td class="mono">server</td>
-        <td><span class="mitre-id">T1548.003</span><span class="mitre-name">Abuse Elevation Control – sudo</span></td>
+        <td class="ts">2026-06-14 02:10:17</td>
+        <td><span class="name">Failed Windows Logon</span><div class="desc">WIN-AUTH-001</div></td>
+        <td class="mono">svc-backup</td>
+        <td class="mono ip">10.0.0.55</td>
+        <td class="mono">WIN-DC01</td>
+        <td><span class="mitre-id">T1110</span><span class="mitre-name">Brute Force – Failed Windows Logon</span></td>
       </tr>
       <tr data-sev="LOW" data-lat="0">
         <td><span class="dot" style="background:#6b7280"></span></td>
         <td class="sev-cell">Low</td>
-        <td class="ts">2026-06-10 09:00:45</td>
-        <td><span class="name">Accepted SSH Login</span><div class="desc">LINUX-SSH-002</div></td>
-        <td class="mono">root</td>
-        <td class="mono ip">10.0.0.5</td>
-        <td class="mono">server</td>
-        <td><span class="mitre-id">T1021.004</span><span class="mitre-name">Remote Services – SSH</span></td>
-      </tr>
-      <tr data-sev="LOW" data-lat="0">
-        <td><span class="dot" style="background:#6b7280"></span></td>
-        <td class="sev-cell">Low</td>
-        <td class="ts">2026-06-10 09:01:00</td>
-        <td><span class="name">Accepted SSH Login</span><div class="desc">LINUX-SSH-002</div></td>
-        <td class="mono">jsmith</td>
-        <td class="mono ip">10.0.0.9</td>
-        <td class="mono">server</td>
-        <td><span class="mitre-id">T1021.004</span><span class="mitre-name">Remote Services – SSH</span></td>
-      </tr>
-      <tr data-sev="LOW" data-lat="0">
-        <td><span class="dot" style="background:#6b7280"></span></td>
-        <td class="sev-cell">Low</td>
-        <td class="ts">2026-06-10 09:01:30</td>
-        <td><span class="name">Accepted SSH Login</span><div class="desc">LINUX-SSH-002</div></td>
-        <td class="mono">jsmith</td>
-        <td class="mono ip">10.0.0.11</td>
-        <td class="mono">server</td>
-        <td><span class="mitre-id">T1021.004</span><span class="mitre-name">Remote Services – SSH</span></td>
-      </tr>
-      <tr data-sev="LOW" data-lat="0">
-        <td><span class="dot" style="background:#6b7280"></span></td>
-        <td class="sev-cell">Low</td>
-        <td class="ts">2026-06-10 09:04:00</td>
-        <td><span class="name">Session Opened</span><div class="desc">LINUX-SESSION-001</div></td>
-        <td class="mono">root</td>
-        <td class="mono ip">—</td>
-        <td class="mono">server</td>
-        <td><span class="mitre-id">T1078</span><span class="mitre-name">Valid Accounts – Session</span></td>
+        <td class="ts">2026-06-14 02:11:00</td>
+        <td><span class="name">Successful Windows Logon</span><div class="desc">WIN-AUTH-002</div></td>
+        <td class="mono">svc-backup</td>
+        <td class="mono ip">10.0.0.55</td>
+        <td class="mono">WIN-SRV01</td>
+        <td><span class="mitre-id">T1078</span><span class="mitre-name">Valid Accounts – Successful Logon</span></td>
       </tr>
       </tbody>
     </table>
@@ -657,7 +502,7 @@ footer {
 
   <footer>
     <span>SOC Log Analyzer &nbsp;·&nbsp; MITRE ATT&amp;CK mapped</span>
-    <span>18 alerts across 12 log lines</span>
+    <span>11 alerts across 8 log lines</span>
   </footer>
 
 </div>

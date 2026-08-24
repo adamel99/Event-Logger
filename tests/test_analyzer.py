@@ -97,6 +97,21 @@ class AnalyzerTests(unittest.TestCase):
         alerts, _ = analyzer.analyze_windows(path)
         self.assertTrue(any(a["detection_id"] == "WIN-LAT-002" and a["severity"] == "CRITICAL" for a in alerts))
 
+    def test_windows_parser_extracts_structured_fields(self):
+        path = self.write_file(
+            '"Id","TimeCreated","MachineName","Message"\n'
+            '"4624","2026-06-13 21:42:30","WIN-SRV02","An account was successfully logged on. TargetUserName: mgarcia SubjectUserName: WIN-SRV02$ Account Name: mgarcia Source Network Address: 203.0.113.77 Workstation Name: LAPTOP-445 Logon Type: 10 Authentication Package: Negotiate Process Name: C:\\Windows\\System32\\winlogon.exe"\n',
+            suffix=".csv",
+        )
+        alerts, _ = analyzer.analyze_windows(path)
+        rdp = next(a for a in alerts if a["detection_id"] == "WIN-AUTH-004")
+        self.assertEqual(rdp["user"], "mgarcia")
+        self.assertEqual(rdp["ip"], "203.0.113.77")
+        self.assertEqual(rdp["host"], "WIN-SRV02")
+        self.assertEqual(rdp["windows_fields"]["workstation"], "LAPTOP-445")
+        self.assertEqual(rdp["windows_fields"]["auth_package"], "Negotiate")
+        self.assertIn("Process:C:\\Windows\\System32\\winlogon.exe", rdp["cmd"])
+
     def test_timeline_export_contains_rule_id_and_host(self):
         path = self.write_file("Jun 10 09:00:45 server sshd[6]: Accepted password for root from 10.0.0.5 port 22 ssh2\n")
         alerts, _ = analyzer.analyze_linux(path)
